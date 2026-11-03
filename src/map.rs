@@ -1,5 +1,6 @@
 use crate::scenario::{format_number, ActiveScenario};
 use crate::state::{AppState, GameSession, UiFonts};
+use crate::ui::theme::Theme;
 use bevy::asset::RenderAssetUsages;
 use bevy::input::mouse::{MouseMotion, MouseScrollUnit, MouseWheel};
 use bevy::picking::prelude::*;
@@ -141,6 +142,21 @@ pub struct CapitalCityBadge {
     pub min_visible_scale: f32,
 }
 
+#[derive(Component)]
+pub struct ProvinceHoverTooltipRoot;
+
+#[derive(Component)]
+pub struct ProvinceHoverTooltipFlag;
+
+#[derive(Component)]
+pub struct ProvinceHoverTooltipTitle;
+
+#[derive(Resource, Default)]
+pub struct ProvinceHoverTooltipTimer {
+    pub hovered_pid: Option<u32>,
+    pub elapsed: f32,
+}
+
 pub struct MapPlugin;
 
 impl Plugin for MapPlugin {
@@ -152,6 +168,7 @@ impl Plugin for MapPlugin {
                 target_scale: 0.85,
             })
             .init_resource::<MapDragState>()
+            .init_resource::<ProvinceHoverTooltipTimer>()
             .add_systems(Startup, setup_world_map)
             .add_systems(OnEnter(AppState::InGame), setup_ingame_hud)
             .add_systems(OnExit(AppState::InGame), cleanup_ingame_hud)
@@ -162,6 +179,7 @@ impl Plugin for MapPlugin {
                     update_visual_lod,
                     province_interaction.run_if(is_map_active),
                     update_province_overlays,
+                    update_province_hover_tooltip.run_if(is_map_active),
                     update_country_labels_visibility.run_if(is_map_active),
                 )
                     .chain(),
@@ -577,12 +595,70 @@ pub fn is_cursor_over_ui(
     }
 }
 
+/// Antialiased yuvarlak köşeli ve kenarlıklı (border) 2D dikdörtgen dokusu oluşturur.
+fn generate_rounded_rect_texture(
+    w: u32,
+    h: u32,
+    radius: f32,
+    fill_color: [u8; 4],
+    border_color: [u8; 4],
+    border_width: f32,
+) -> Image {
+    let mut buf = vec![0u8; (w * h * 4) as usize];
+    let hw = w as f32 * 0.5;
+    let hh = h as f32 * 0.5;
+    let r = radius.min(hw).min(hh);
+
+    for y in 0..h {
+        let py = (y as f32 + 0.5) - hh;
+        for x in 0..w {
+            let px = (x as f32 + 0.5) - hw;
+            let qx = px.abs() - (hw - r);
+            let qy = py.abs() - (hh - r);
+            let dist = (qx.max(0.0).hypot(qy.max(0.0)) + qx.max(qy).min(0.0)) - r;
+
+            let outer_alpha = (0.5 - dist).clamp(0.0, 1.0);
+            if outer_alpha <= 0.0 {
+                continue;
+            }
+
+            let inner_dist = dist + border_width;
+            let border_t = (inner_dist + 0.5).clamp(0.0, 1.0);
+
+            let r_col = fill_color[0] as f32 * (1.0 - border_t) + border_color[0] as f32 * border_t;
+            let g_col = fill_color[1] as f32 * (1.0 - border_t) + border_color[1] as f32 * border_t;
+            let b_col = fill_color[2] as f32 * (1.0 - border_t) + border_color[2] as f32 * border_t;
+            let a_base = fill_color[3] as f32 * (1.0 - border_t) + border_color[3] as f32 * border_t;
+            let a_col = a_base * outer_alpha;
+
+            let idx = ((y * w + x) * 4) as usize;
+            buf[idx] = r_col.round() as u8;
+            buf[idx + 1] = g_col.round() as u8;
+            buf[idx + 2] = b_col.round() as u8;
+            buf[idx + 3] = a_col.round() as u8;
+        }
+    }
+
+    Image::new(
+        Extent3d {
+            width: w,
+            height: h,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        buf,
+        TextureFormat::Rgba8UnormSrgb,
+        RenderAssetUsages::MAIN_WORLD | RenderAssetUsages::RENDER_WORLD,
+    )
+}
+
 fn setup_world_map(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     scenario: Res<ActiveScenario>,
     mut images: ResMut<Assets<Image>>,
     fonts: Res<UiFonts>,
+    theme: Res<Theme>,
 ) {
     commands.spawn((
         Camera2d,
@@ -738,6 +814,7 @@ fn setup_world_map(
 
     let mut placed_labels: Vec<(f32, f32)> = Vec::new();
     let mut placed_badge_boxes: Vec<BadgeAabb> = Vec::new();
+    let mut badge_bg_cache: HashMap<u32, Handle<Image>> = HashMap::new();
 
     for civ in civ_list {
 
@@ -1144,68 +1221,61 @@ fn setup_world_map(
             let badge_w = (30.5 + text_w).max(36.0);
             let badge_h = 16.0;
 
-            // Kesin Çakışma Önleme (AABB Anti-Collision Engine):
-            // Başkent rozetleri şehirlerin tam üstünde kalır; denize veya komşu ülkelere ASLA kaymaz!
-            let mut candidate_offsets: Vec<(f32, f32)> = Vec::with_capacity(16);
+            // Kesin Çakışma Önleme (Universal AABB Anti-Collision Engine):
+            // Dünyanın hiçbir yerindeki başkent rozetleri asla birbiriyle çakışmaz!
+            let mut candidate_offsets: Vec<(f32, f32)> = Vec::with_capacity(128);
 
-            // Bitişik mikro-komşu başkentler için yerinde mikro ayrışma:
+            // 1. Mikro-bölgesel yön tercihleri (özellikle dar coğrafyalar için ilk denenecek ideal konum)
             if civ.tag == "cyn" {
-                // KKTC: Kıbrıs adasının kuzey yarısında (+6px yukarı, ada üzerinde kalır, asla Türkiye'ye uzanmaz)
                 candidate_offsets.push((0.0, 6.0));
-                candidate_offsets.push((4.0, 6.0));
-                candidate_offsets.push((-4.0, 6.0));
             } else if civ.tag == "cpr" {
-                // Güney Kıbrıs: Kıbrıs adasının güney yarısında (-7px aşağı, ada üzerinde kalır)
                 candidate_offsets.push((0.0, -7.0));
-                candidate_offsets.push((-4.0, -7.0));
-                candidate_offsets.push((4.0, -7.0));
             } else if civ.tag == "jor" {
-                // Ürdün: Amman'ın doğu ekseninde (+14px doğu - Ürdün içine yayılır, Kudüs'ü tıkamaz)
-                candidate_offsets.push((14.0, 0.0));
-                candidate_offsets.push((16.0, 2.0));
-                candidate_offsets.push((12.0, -2.0));
-                candidate_offsets.push((0.0, 0.0));
+                candidate_offsets.push((16.0, 0.0));
             } else if civ.tag == "isr" {
-                // İsrail: Tel Aviv - Kudüs iç koridorunda (-14px batı, +10px kuzey - 100% İsrail toprağında, denizde değil!)
-                candidate_offsets.push((-14.0, 10.0));
-                candidate_offsets.push((-16.0, 12.0));
-                candidate_offsets.push((-12.0, 8.0));
-                candidate_offsets.push((-10.0, 14.0));
+                candidate_offsets.push((-15.0, 9.0));
             } else if civ.tag == "pal" {
-                // Filistin: Batı Şeria güneyinde (0px x, -14px güney - 100% Batı Şeria içinde, asla Mısır'a taşmaz!)
                 candidate_offsets.push((0.0, -14.0));
-                candidate_offsets.push((2.0, -16.0));
-                candidate_offsets.push((-2.0, -14.0));
-                candidate_offsets.push((4.0, -12.0));
             } else if civ.tag == "vat" {
-                candidate_offsets.push((-6.0, 6.0));
+                candidate_offsets.push((-8.0, 8.0));
             } else if civ.tag == "mco" {
-                candidate_offsets.push((6.0, -6.0));
+                candidate_offsets.push((8.0, -8.0));
             } else if civ.tag == "smr" {
-                candidate_offsets.push((0.0, -6.0));
+                candidate_offsets.push((0.0, -8.0));
             } else if civ.tag == "cog" {
-                candidate_offsets.push((-6.0, 6.0));
+                candidate_offsets.push((-12.0, 10.0));
             } else if civ.tag == "drc_rel1_r" {
-                candidate_offsets.push((6.0, -6.0));
-            } else {
-                // Tüm kıyı, ada ve normal ülkeler için BİRİNCİ ÖNCELİK:
-                // Şehrin tam koordinatı! (Denize veya başka ülkelere kaymayı %100 engeller)
-                candidate_offsets.push((0.0, 0.0));
-                // Yanında çok yakın başka bir başkent varsa yalnızca küçük mikro adımlarla ayrışma:
-                candidate_offsets.push((0.0, 6.0));
-                candidate_offsets.push((0.0, -6.0));
-                candidate_offsets.push((6.0, 0.0));
-                candidate_offsets.push((-6.0, 0.0));
-                candidate_offsets.push((6.0, 6.0));
-                candidate_offsets.push((-6.0, 6.0));
-                candidate_offsets.push((6.0, -6.0));
-                candidate_offsets.push((-6.0, -6.0));
-                candidate_offsets.push((0.0, 10.0));
-                candidate_offsets.push((0.0, -10.0));
+                candidate_offsets.push((12.0, -10.0));
             }
 
-            let mut best_ox = candidate_offsets.first().map(|c| c.0).unwrap_or(0.0);
-            let mut best_oy = candidate_offsets.first().map(|c| c.1).unwrap_or(0.0);
+            if !candidate_offsets.contains(&(0.0, 0.0)) {
+                candidate_offsets.push((0.0, 0.0));
+            }
+
+            // 2. Global Eliptik Spiral Arama (Tüm Dünya İçin Kesin Çakışma Önleyici):
+            // Eğer ilk konum başka bir başkentle çakışıyorsa, rozet dışa doğru eliptik spiral
+            // şeklinde genişleyerek en yakın boş, çakışmasız konumu bulur.
+            let aspect = (badge_w / badge_h).clamp(1.5, 3.2);
+            for step_r in 1..=24 {
+                let r = step_r as f32 * 7.5 + 8.0;
+                let rx = r * aspect * 0.52;
+                let ry = r;
+
+                // Dikey öncelikli yerleşimler (aynı boylam / meridyen boyunca kayma haritada daha doğaldır)
+                candidate_offsets.push((0.0, ry));
+                candidate_offsets.push((0.0, -ry));
+                candidate_offsets.push((rx, 0.0));
+                candidate_offsets.push((-rx, 0.0));
+
+                // Açısal adımlar (30°, 45°, 60°, 120°, 135°, 150°, 210°, 225°, 240°, 300°, 315°, 330°)
+                for ang_deg in [30.0, 45.0, 60.0, 120.0, 135.0, 150.0, 210.0, 225.0, 240.0, 300.0, 315.0, 330.0] {
+                    let rad = ang_deg * std::f32::consts::PI / 180.0;
+                    candidate_offsets.push((rx * rad.cos(), ry * rad.sin()));
+                }
+            }
+
+            let mut best_ox = 0.0;
+            let mut best_oy = 0.0;
             let mut found_non_overlapping = false;
 
             for (ox, oy) in candidate_offsets {
@@ -1214,8 +1284,11 @@ fn setup_world_map(
                 let cand_min_y = c_world.y + oy - badge_h * 0.5;
                 let cand_max_y = c_world.y + oy + badge_h * 0.5;
 
+                // Hem normal x koordinatında hem de wrap kopyalarında çakışma kontrolü:
                 let has_conflict = placed_badge_boxes.iter().any(|bb| {
-                    bb.overlaps(cand_min_x, cand_max_x, cand_min_y, cand_max_y, 1.2)
+                    bb.overlaps(cand_min_x, cand_max_x, cand_min_y, cand_max_y, 1.5)
+                        || bb.overlaps(cand_min_x + MAP_WIDTH_F32, cand_max_x + MAP_WIDTH_F32, cand_min_y, cand_max_y, 1.5)
+                        || bb.overlaps(cand_min_x - MAP_WIDTH_F32, cand_max_x - MAP_WIDTH_F32, cand_min_y, cand_max_y, 1.5)
                 });
 
                 if !has_conflict {
@@ -1234,12 +1307,12 @@ fn setup_world_map(
 
             if !found_non_overlapping {
                 best_ox = 0.0;
-                best_oy = 0.0;
+                best_oy = (placed_badge_boxes.len() as f32 + 1.0) * (badge_h + 3.0);
                 placed_badge_boxes.push(BadgeAabb {
                     min_x: c_world.x - badge_w * 0.5,
                     max_x: c_world.x + badge_w * 0.5,
-                    min_y: c_world.y - badge_h * 0.5,
-                    max_y: c_world.y + badge_h * 0.5,
+                    min_y: c_world.y + best_oy - badge_h * 0.5,
+                    max_y: c_world.y + best_oy + badge_h * 0.5,
                 });
             }
 
@@ -1258,6 +1331,24 @@ fn setup_world_map(
             let flag_center_x = -badge_w * 0.5 + 12.0;
             let text_start_x = -badge_w * 0.5 + 24.0;
 
+            let w_int = (badge_w.round() as u32).max(36);
+            let h_int = badge_h as u32;
+
+            let bg_handle = badge_bg_cache
+                .entry(w_int)
+                .or_insert_with(|| {
+                    let img = generate_rounded_rect_texture(
+                        w_int,
+                        h_int,
+                        5.5,
+                        [12, 16, 24, 235],
+                        [178, 148, 92, 220],
+                        1.2,
+                    );
+                    images.add(img)
+                })
+                .clone();
+
             for wrap_idx in [-1i32, 0, 1] {
                 let wrap_offset_x = wrap_idx as f32 * MAP_WIDTH_F32;
                 let badge_x = badge_base_x + wrap_offset_x;
@@ -1274,12 +1365,13 @@ fn setup_world_map(
                         Pickable::IGNORE,
                     ))
                     .with_children(|parent| {
-                        // Koyu yarı saydam kompakt arka plan kutucuğu (Pill) - tam oturan boyut
+                        // Yuvarlak köşeli ve altın border'lı antialiased arka plan
                         parent.spawn((
-                            Sprite::from_color(
-                                Color::srgba(0.04, 0.06, 0.10, 0.88),
-                                Vec2::new(badge_w, badge_h),
-                            ),
+                            Sprite {
+                                image: bg_handle.clone(),
+                                custom_size: Some(Vec2::new(w_int as f32, h_int as f32)),
+                                ..default()
+                            },
                             Transform::from_xyz(0.0, 0.0, 0.0),
                             Pickable::IGNORE,
                         ));
@@ -1304,7 +1396,7 @@ fn setup_world_map(
                                 ..default()
                             },
                             Anchor::CENTER_LEFT,
-                            TextColor(Color::srgb(0.80, 0.79, 0.75)),
+                            TextColor(Color::srgb(0.84, 0.83, 0.79)),
                             Transform::from_xyz(text_start_x, 0.0, 0.1),
                             Pickable::IGNORE,
                         ));
@@ -1312,6 +1404,56 @@ fn setup_world_map(
             }
         }
     }
+
+    // 5. Şehir / İl Üzerine Gelince (Hover) Beliren Dinamik Fare Tooltip Kartı (Yalnızca Bayrak + İl Adı)
+    commands
+        .spawn((
+            Node {
+                position_type: PositionType::Absolute,
+                left: Val::Px(0.0),
+                top: Val::Px(0.0),
+                padding: UiRect::axes(theme.spacing.val_xs(), theme.spacing.val_xxs()),
+                border: UiRect::all(Val::Px(theme.borders.thin)),
+                border_radius: BorderRadius::all(theme.radius.val_sm()),
+                flex_direction: FlexDirection::Row,
+                align_items: AlignItems::Center,
+                column_gap: theme.spacing.val_xs(),
+                display: Display::None,
+                ..default()
+            },
+            BackgroundColor(theme.colors.surface_raised),
+            BorderColor::all(theme.colors.border_subtle),
+            ZIndex(100),
+            Pickable::IGNORE,
+            ProvinceHoverTooltipRoot,
+        ))
+        .with_children(|root| {
+            // Ülke Bayrağı
+            root.spawn((
+                ImageNode::default(),
+                Node {
+                    width: Val::Px(18.0),
+                    height: Val::Px(12.0),
+                    border_radius: BorderRadius::all(theme.radius.val_xs()),
+                    ..default()
+                },
+                Pickable::IGNORE,
+                ProvinceHoverTooltipFlag,
+            ));
+
+            // Şehir / İl Adı
+            root.spawn((
+                Text::new(""),
+                TextFont {
+                    font: fonts.heading.clone(),
+                    font_size: FontSize::Px(theme.typography.body_sm()),
+                    ..default()
+                },
+                TextColor(theme.colors.text_primary),
+                Pickable::IGNORE,
+                ProvinceHoverTooltipTitle,
+            ));
+        });
 
     commands.insert_resource(WorldMapData {
         width: MAP_WIDTH,
@@ -1656,10 +1798,11 @@ fn camera_controller(
         rig.target_pos += dir.normalize() * speed * dt;
     }
 
-    // DİKEY EKSEN: Haritanın üst ve alt sınırlarında durdur
+    // DİKEY EKSEN: Haritanın uçlarındaki şehirlere rahatça tıklanabilmesi için
+    // dengeli ve ölçülü dikey kaydırma payı (margin)
     let half_map_h = MAP_HEIGHT as f32 * 0.5;
     let half_view_h_target = (win_h * 0.5) * rig.target_scale;
-    let margin_y = half_view_h_target * 0.05;
+    let margin_y = half_view_h_target * 0.12 + 80.0;
     let limit_y = (half_map_h + margin_y - half_view_h_target).max(0.0);
     rig.target_pos.y = rig.target_pos.y.clamp(-limit_y, limit_y);
 
@@ -1682,7 +1825,8 @@ fn camera_controller(
     }
 
     let half_view_h = (win_h * 0.5) * new_scale;
-    let cur_limit_y = (half_map_h + half_view_h * 0.05 - half_view_h).max(0.0);
+    let cur_margin_y = half_view_h * 0.12 + 80.0;
+    let cur_limit_y = (half_map_h + cur_margin_y - half_view_h).max(0.0);
     cam_tf.translation.y = cam_tf.translation.y.clamp(-cur_limit_y, cur_limit_y);
 }
 
@@ -1825,7 +1969,23 @@ fn province_interaction(
         if let Some(cursor_pos) = cursor_opt {
             if let Ok(world_pos) = camera.viewport_to_world_2d(cam_global, cursor_pos) {
                 if let Some((px, py)) = world_to_map_pixel(world_pos) {
-                    let pid = map_data.get_province_at(px, py);
+                    let mut pid = map_data.get_province_at(px, py);
+                    // Kıyı veya dar sınır hatlarında toleranslı kolay tıklama:
+                    if pid == 0 {
+                        'snap: for r in 1..=3 {
+                            for dy in [-r, 0, r] {
+                                for dx in [-r, 0, r] {
+                                    let nx = (px as i32 + dx).rem_euclid(MAP_WIDTH as i32) as u32;
+                                    let ny = (py as i32 + dy).clamp(0, MAP_HEIGHT as i32 - 1) as u32;
+                                    let near_pid = map_data.get_province_at(nx, ny);
+                                    if near_pid != 0 {
+                                        pid = near_pid;
+                                        break 'snap;
+                                    }
+                                }
+                            }
+                        }
+                    }
                     if pid != 0 {
                         cursor_pid = Some(pid);
                     }
@@ -2052,12 +2212,104 @@ fn update_province_overlays(
     *prev_selected = map_data.selected_province;
 }
 
+fn update_province_hover_tooltip(
+    time: Res<Time>,
+    window_q: Single<&Window, With<PrimaryWindow>>,
+    map_data: Res<WorldMapData>,
+    scenario: Res<ActiveScenario>,
+    asset_server: Res<AssetServer>,
+    mut timer: ResMut<ProvinceHoverTooltipTimer>,
+    mut root_q: Query<&mut Node, With<ProvinceHoverTooltipRoot>>,
+    mut flag_q: Query<&mut ImageNode, With<ProvinceHoverTooltipFlag>>,
+    mut title_q: Query<&mut Text, With<ProvinceHoverTooltipTitle>>,
+) {
+    let Some(mut root_node) = root_q.iter_mut().next() else {
+        return;
+    };
+
+    let cur_hovered = map_data.hovered_province;
+    if timer.hovered_pid != cur_hovered {
+        timer.hovered_pid = cur_hovered;
+        timer.elapsed = 0.0;
+    } else if cur_hovered.is_some() {
+        timer.elapsed += time.delta_secs();
+    }
+
+    // AoH3 / Paradox stili: Fare ile harita üzerinde gezinirken titreme olmaması için
+    // ~0.30 saniye gecikme (delay) sonrasında imlecin altında kart belirir.
+    let should_show = cur_hovered.is_some() && timer.elapsed >= 0.30;
+
+    if !should_show {
+        if root_node.display != Display::None {
+            root_node.display = Display::None;
+        }
+        return;
+    }
+
+    let Some(pid) = cur_hovered else {
+        root_node.display = Display::None;
+        return;
+    };
+
+    let Some(prov) = map_data.provinces.get(&pid) else {
+        root_node.display = Display::None;
+        return;
+    };
+
+    let Some(cursor_pos) = window_q.cursor_position() else {
+        root_node.display = Display::None;
+        return;
+    };
+
+    // Tooltip konumu: Farenin sağ altı, ekran kenarlarına taşmayacak şekilde sınırlandırılmış
+    let win_w = window_q.width();
+    let win_h = window_q.height();
+    let offset_x = 16.0;
+    let offset_y = 20.0;
+    let tooltip_w = 170.0;
+    let tooltip_h = 32.0;
+
+    let mut left = cursor_pos.x + offset_x;
+    let mut top = cursor_pos.y + offset_y;
+
+    if left + tooltip_w > win_w - 10.0 {
+        left = (cursor_pos.x - tooltip_w - 10.0).max(10.0);
+    }
+    if top + tooltip_h > win_h - 10.0 {
+        top = (cursor_pos.y - tooltip_h - 10.0).max(10.0);
+    }
+
+    root_node.left = Val::Px(left);
+    root_node.top = Val::Px(top);
+    root_node.display = Display::Flex;
+
+    let owner_civ = scenario
+        .province_owners
+        .get(&pid)
+        .and_then(|cid| scenario.civs.get(cid));
+
+    let flag_path = if let Some(civ) = owner_civ {
+        ActiveScenario::get_flag_path(&civ.tag, None)
+    } else {
+        "flags/unkn/0.png".to_string()
+    };
+
+    if let Some(mut flag_img) = flag_q.iter_mut().next() {
+        flag_img.image = asset_server.load(flag_path);
+    }
+
+    if let Some(mut title) = title_q.iter_mut().next() {
+        title.0 = prov.name.clone();
+    }
+}
+
 fn setup_ingame_hud(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     scenario: Res<ActiveScenario>,
     session: Res<GameSession>,
     fonts: Res<UiFonts>,
+    theme: Res<Theme>,
 ) {
     let player_civ = scenario.civs.get(&session.player_civ_id);
     let (civ_name, civ_color, flag_path) = if let Some(c) = player_civ {
@@ -2093,25 +2345,25 @@ fn setup_ingame_hud(
                     width: Val::Percent(100.0),
                     height: Val::Px(58.0),
                     padding: UiRect {
-                        left: Val::Px(22.0),
+                        left: theme.spacing.val_lg(),
                         right: Val::Px(150.0),
                         top: Val::Px(0.0),
                         bottom: Val::Px(0.0),
                     },
                     align_items: AlignItems::Center,
                     justify_content: JustifyContent::SpaceBetween,
-                    border: UiRect::bottom(Val::Px(1.5)),
+                    border: UiRect::bottom(Val::Px(theme.borders.thin)),
                     ..default()
                 },
-                BackgroundColor(Color::srgba(0.06, 0.08, 0.13, 0.94)),
-                BorderColor::all(Color::srgba(0.76, 0.64, 0.38, 0.65)),
+                BackgroundColor(theme.colors.surface_raised),
+                BorderColor::all(theme.colors.border_subtle),
             ))
             .with_children(|topbar| {
                 // Sol: Oyuncu ülkesi bayrağı, renk rozeti ve adı
                 topbar
                     .spawn(Node {
                         align_items: AlignItems::Center,
-                        column_gap: Val::Px(12.0),
+                        column_gap: theme.spacing.val_sm(),
                         ..default()
                     })
                     .with_children(|left| {
@@ -2120,8 +2372,8 @@ fn setup_ingame_hud(
                             width: Val::Px(42.0),
                             height: Val::Px(28.0),
                             position_type: PositionType::Relative,
-                            border: UiRect::all(Val::Px(1.5)),
-                            border_radius: BorderRadius::all(Val::Px(5.0)),
+                            border: UiRect::all(Val::Px(theme.borders.thin)),
+                            border_radius: BorderRadius::all(theme.radius.val_sm()),
                             overflow: Overflow::clip(),
                             ..default()
                         })
@@ -2174,10 +2426,10 @@ fn setup_ingame_hud(
                             )),
                             TextFont {
                                 font: fonts.heading.clone(),
-                                font_size: FontSize::Px(16.5),
+                                font_size: FontSize::Px(theme.typography.title_lg()),
                                 ..default()
                             },
-                            TextColor(Color::srgb(0.96, 0.94, 0.88)),
+                            TextColor(theme.colors.text_primary),
                             HudPlayerTitleText,
                         ));
                     });
@@ -2187,37 +2439,44 @@ fn setup_ingame_hud(
                     Text::new("Haritada bir şehrin üzerine gelin veya tıklayın"),
                     TextFont {
                         font: fonts.medium.clone(),
-                        font_size: FontSize::Px(14.5),
+                        font_size: FontSize::Px(theme.typography.body_md()),
                         ..default()
                     },
-                    TextColor(Color::srgb(0.75, 0.79, 0.86)),
+                    TextColor(theme.colors.text_secondary),
                     HudHoverText,
                 ));
 
                 // Sağ: Ana Menüye Dön butonu
+                let back_bg = theme.colors.surface_panel();
+                let back_hover = theme.colors.surface_raised;
+                let back_border = theme.colors.border_subtle;
+                let back_border_hover = theme.colors.border_default;
+
                 topbar
                     .spawn((
                         Node {
-                            padding: UiRect::axes(Val::Px(16.0), Val::Px(8.0)),
-                            border: UiRect::all(Val::Px(1.5)),
-                            border_radius: BorderRadius::all(Val::Px(8.0)),
+                            padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_xs()),
+                            border: UiRect::all(Val::Px(theme.borders.default)),
+                            border_radius: BorderRadius::all(theme.radius.val_md()),
                             ..default()
                         },
-                        BackgroundColor(Color::srgba(0.14, 0.17, 0.24, 0.95)),
-                        BorderColor::all(Color::srgba(0.72, 0.60, 0.36, 0.80)),
+                        BackgroundColor(back_bg),
+                        BorderColor::all(back_border),
                         BackToMenuButton,
                     ))
                     .observe(
-                        |ev: On<PointerOver>, mut bg_q: Query<&mut BackgroundColor>| {
-                            if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                bg.0 = Color::srgba(0.22, 0.27, 0.38, 0.98);
+                        move |ev: On<PointerOver>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                            if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
+                                bg.0 = back_hover;
+                                *border = BorderColor::all(back_border_hover);
                             }
                         },
                     )
                     .observe(
-                        |ev: On<PointerOut>, mut bg_q: Query<&mut BackgroundColor>| {
-                            if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                bg.0 = Color::srgba(0.14, 0.17, 0.24, 0.95);
+                        move |ev: On<PointerOut>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                            if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
+                                bg.0 = back_bg;
+                                *border = BorderColor::all(back_border);
                             }
                         },
                     )
@@ -2231,10 +2490,10 @@ fn setup_ingame_hud(
                             Text::new("Ana Menü"),
                             TextFont {
                                 font: fonts.body.clone(),
-                                font_size: FontSize::Px(14.0),
+                                font_size: FontSize::Px(theme.typography.label_md()),
                                 ..default()
                             },
-                            TextColor(Color::srgb(0.95, 0.92, 0.82)),
+                            TextColor(theme.colors.text_primary),
                             Pickable::IGNORE,
                         ));
                     });
@@ -2245,16 +2504,16 @@ fn setup_ingame_hud(
                 Node {
                     display: Display::None,
                     width: Val::Px(495.0),
-                    margin: UiRect::all(Val::Px(20.0)),
-                    padding: UiRect::all(Val::Px(18.0)),
+                    margin: UiRect::all(theme.spacing.val_lg()),
+                    padding: UiRect::all(theme.spacing.val_lg()),
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(10.0),
-                    border: UiRect::all(Val::Px(1.5)),
-                    border_radius: BorderRadius::all(Val::Px(14.0)),
+                    row_gap: theme.spacing.val_sm(),
+                    border: UiRect::all(Val::Px(theme.borders.default)),
+                    border_radius: BorderRadius::all(theme.radius.val_lg()),
                     ..default()
                 },
-                BackgroundColor(Color::srgba(0.06, 0.08, 0.13, 0.95)),
-                BorderColor::all(Color::srgba(0.80, 0.68, 0.38, 0.88)),
+                BackgroundColor(theme.colors.surface_raised),
+                BorderColor::all(theme.colors.border_subtle),
                 ProvincePanelRoot,
             ))
             .with_children(|panel| {
@@ -2262,10 +2521,10 @@ fn setup_ingame_hud(
                     Text::new("Seçili Şehir"),
                     TextFont {
                         font: fonts.heading.clone(),
-                        font_size: FontSize::Px(19.5),
+                        font_size: FontSize::Px(theme.typography.title_lg()),
                         ..default()
                     },
-                    TextColor(Color::srgb(0.96, 0.88, 0.64)),
+                    TextColor(theme.colors.accent),
                     ProvincePanelTitle,
                 ));
 
@@ -2273,10 +2532,10 @@ fn setup_ingame_hud(
                     Text::new("Detaylar"),
                     TextFont {
                         font: fonts.medium.clone(),
-                        font_size: FontSize::Px(14.0),
+                        font_size: FontSize::Px(theme.typography.body_md()),
                         ..default()
                     },
-                    TextColor(Color::srgb(0.82, 0.85, 0.90)),
+                    TextColor(theme.colors.text_secondary),
                     ProvincePanelDetails,
                 ));
 
@@ -2284,34 +2543,41 @@ fn setup_ingame_hud(
                 panel
                     .spawn(Node {
                         flex_direction: FlexDirection::Row,
-                        column_gap: Val::Px(10.0),
-                        margin: UiRect::top(Val::Px(4.0)),
+                        column_gap: theme.spacing.val_sm(),
+                        margin: UiRect::top(theme.spacing.val_xs()),
                         ..default()
                     })
                     .with_children(|actions| {
                         // 1. Ülke Rengini Değiştir Butonu
+                        let recolor_bg = theme.colors.surface_panel();
+                        let recolor_hover = theme.colors.surface_raised;
+                        let recolor_border = theme.colors.border_subtle;
+                        let recolor_border_hover = theme.colors.border_default;
+
                         actions
                             .spawn((
                                 Node {
-                                    padding: UiRect::axes(Val::Px(14.0), Val::Px(8.0)),
-                                    border: UiRect::all(Val::Px(1.5)),
-                                    border_radius: BorderRadius::all(Val::Px(8.0)),
+                                    padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_xs()),
+                                    border: UiRect::all(Val::Px(theme.borders.default)),
+                                    border_radius: BorderRadius::all(theme.radius.val_md()),
                                     ..default()
                                 },
-                                BackgroundColor(Color::srgba(0.14, 0.19, 0.29, 0.95)),
-                                BorderColor::all(Color::srgba(0.55, 0.68, 0.88, 0.85)),
+                                BackgroundColor(recolor_bg),
+                                BorderColor::all(recolor_border),
                             ))
                             .observe(
-                                |ev: On<PointerOver>, mut bg_q: Query<&mut BackgroundColor>| {
-                                    if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                        bg.0 = Color::srgba(0.22, 0.29, 0.42, 0.99);
+                                move |ev: On<PointerOver>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                                    if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
+                                        bg.0 = recolor_hover;
+                                        *border = BorderColor::all(recolor_border_hover);
                                     }
                                 },
                             )
                             .observe(
-                                |ev: On<PointerOut>, mut bg_q: Query<&mut BackgroundColor>| {
-                                    if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                        bg.0 = Color::srgba(0.14, 0.19, 0.29, 0.95);
+                                move |ev: On<PointerOut>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                                    if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
+                                        bg.0 = recolor_bg;
+                                        *border = BorderColor::all(recolor_border);
                                     }
                                 },
                             )
@@ -2393,37 +2659,44 @@ fn setup_ingame_hud(
                                     Text::new("🎨 Ülke Rengini Değiştir"),
                                     TextFont {
                                         font: fonts.body.clone(),
-                                        font_size: FontSize::Px(13.0),
+                                        font_size: FontSize::Px(theme.typography.body_sm()),
                                         ..default()
                                     },
-                                    TextColor(Color::srgb(0.92, 0.95, 1.0)),
+                                    TextColor(theme.colors.text_primary),
                                     Pickable::IGNORE,
                                 ));
                             });
 
                         // 2. Şehri Fethet (Oyuncu Ülkesine Kat) Butonu
+                        let annex_bg = theme.colors.danger;
+                        let annex_hover = theme.colors.danger_hover;
+                        let annex_border = theme.colors.danger_hover;
+                        let annex_border_hover = theme.colors.danger_pressed;
+
                         actions
                             .spawn((
                                 Node {
-                                    padding: UiRect::axes(Val::Px(14.0), Val::Px(8.0)),
-                                    border: UiRect::all(Val::Px(1.5)),
-                                    border_radius: BorderRadius::all(Val::Px(8.0)),
+                                    padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_xs()),
+                                    border: UiRect::all(Val::Px(theme.borders.default)),
+                                    border_radius: BorderRadius::all(theme.radius.val_md()),
                                     ..default()
                                 },
-                                BackgroundColor(Color::srgba(0.28, 0.14, 0.14, 0.95)),
-                                BorderColor::all(Color::srgba(0.88, 0.52, 0.45, 0.85)),
+                                BackgroundColor(annex_bg),
+                                BorderColor::all(annex_border),
                             ))
                             .observe(
-                                |ev: On<PointerOver>, mut bg_q: Query<&mut BackgroundColor>| {
-                                    if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                        bg.0 = Color::srgba(0.40, 0.18, 0.18, 0.99);
+                                move |ev: On<PointerOver>, mut bg_q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                                    if let Ok((mut bg, mut border)) = bg_q.get_mut(ev.entity) {
+                                        bg.0 = annex_hover;
+                                        *border = BorderColor::all(annex_border_hover);
                                     }
                                 },
                             )
                             .observe(
-                                |ev: On<PointerOut>, mut bg_q: Query<&mut BackgroundColor>| {
-                                    if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                        bg.0 = Color::srgba(0.28, 0.14, 0.14, 0.95);
+                                move |ev: On<PointerOut>, mut bg_q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                                    if let Ok((mut bg, mut border)) = bg_q.get_mut(ev.entity) {
+                                        bg.0 = annex_bg;
+                                        *border = BorderColor::all(annex_border);
                                     }
                                 },
                             )
@@ -2490,10 +2763,10 @@ fn setup_ingame_hud(
                                     Text::new("⚔ Şehri Ülkeme Kat"),
                                     TextFont {
                                         font: fonts.body.clone(),
-                                        font_size: FontSize::Px(13.0),
+                                        font_size: FontSize::Px(theme.typography.body_sm()),
                                         ..default()
                                     },
-                                    TextColor(Color::srgb(1.0, 0.90, 0.88)),
+                                    TextColor(theme.colors.text_primary),
                                     Pickable::IGNORE,
                                 ));
                             });

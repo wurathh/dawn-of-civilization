@@ -78,8 +78,9 @@ Dawn of Civilization/
   - `Z = 1.0`: Eyalet Sınırları Çizgisi (`borders_west.png`, `borders_east.png` — LOD ile yakınlaşınca görünür)
   - `Z = 2.0`: Dinamik Siyasi Harita Katmanı (CPU üzerinde RGBA tamponu oluşturulup GPU'ya yüklenir)
   - `Z = 3.0`: Eyalet Hover & Seçim Vurgu Katmanı
-  - `Z = 4.2`: Büyük Harita Ülke İsimleri ([`CountryMapLabel`](file:///home/wurathh/Desktop/Dawn%20of%20Civilization/src/map.rs#L138-L141))
-  - `Z = 4.4 - 4.5`: Başkent Rozetleri ([`CapitalCityBadge`](file:///home/wurathh/Desktop/Dawn%20of%20Civilization/src/map.rs#L144-L146))
+  - `Z = 4.2`: Büyük Harita Ülke İsimleri ([`CountryMapLabel`](file:///home/wurathh/Desktop/Dawn%20of%20Civilization/src/map.rs#L134-L137))
+  - `Z = 4.4 - 4.5`: Başkent Rozetleri ([`CapitalCityBadge`](file:///home/wurathh/Desktop/Dawn%20of%20Civilization/src/map.rs#L139-L142))
+  - `Z = 100.0`: Dinamik Eyalet Hover Tooltip Kartı ([`ProvinceHoverTooltipRoot`](file:///home/wurathh/Desktop/Dawn%20of%20Civilization/src/map.rs#L145-L163))
   - Eyalet seçildiğinde gereksiz sarı işaret kutusu kaldırılmış, temiz eyalet sınır vurgusu ve bilgi paneli korunmuştur.
 - **Sonsuz Yatay Döngü (Horizontal Infinite Wrapping):**
   - Dünya 3 kopya halinde spawn edilir: Sol (`WrapCopy(-1)`), Merkez (`WrapCopy(0)`), Sağ (`WrapCopy(1)`).
@@ -110,23 +111,31 @@ Dawn of Civilization/
   - Ebeveyn etiket varlığına `Visibility::Inherited` eklenerek Bevy ECS hiyerarşi uyarıları tamamen giderilmiştir.
 
 ### 4.4. Başkent Rozetleri Sistemi (Capital City Badges)
-- **Kompakt ve Simetrik Kutu Boyutu:**
-  - `get_badge_text_width` fonksiyonunda Inter-Bold 9.5px fontunun harf genişlikleri (advances) piksel piksel kalibre edilmiştir.
-  - Kutu genişliği `badge_w = (30.5 + text_w).max(36.0)` olarak formüle edilmiş, sol kenar boşluğu 5.0px, bayrak-metin arası 5.0px ve sağ metin kenar boşluğu 6.5-7.5px olarak dengelenmiştir.
-  - Hiçbir ülkede metin kutunun dışına taşmaz ("arkaplan yazının gerisinde kalmaz") ve kutu gereksiz uzun boşluklar barındırmaz.
-- **AABB Kesin Çakışma Önleme (Anti-Collision Engine):**
-  - Her yerleştirilen rozet 2D eksen korumalı kutu (`BadgeAabb`) olarak saklanır.
-  - Tüm normal, ada ve kıyı ülkeleri için varsayılan aday `(0.0, 0.0)` koordinatıdır; rozetler asla denize veya komşu ülkelere kaymaz.
-  - Birbirine bitişik mikro başkentler için yerinde mikro ayrışma uygulanır:
-    - KKTC (`cyn`): `(0.0, +6.0)` ile Kıbrıs adasının kuzey yarısında kalır (asla Türkiye'ye uzanmaz).
-    - Güney Kıbrıs (`cpr`): `(0.0, -7.0)` ile Kıbrıs adasının güney yarısında kalır (ada üzerinde kalır).
-    - Ürdün (`jor`): `(+14.0, 0.0)` ile Amman doğusuna / Ürdün içine yayılır (Kudüs koridorunu tıkamaz).
-    - İsrail (`isr`): `(-14.0, +10.0)` ile Tel Aviv - Kudüs iç koridorunda kalır (100% İsrail toprağında, denizde değil!).
-    - Filistin (`pal`): `(0.0, -14.0)` ile Batı Şeria güneyinde kalır (100% Filistin sınırları içinde, asla Mısır'a taşmaz!).
-    - İsrail ve Filistin çakışması Ürdün'ün doğuya ötelenmesi ve dikey/yatay ayrışma ile kesin olarak sıfırlanmıştır.
-  - AABB güvenlik payı `1.2px` seviyesine çekilerek gereksiz uzaklaşmalar tamamen engellenmiştir.
+- **Yuvarlak Köşeli ve Altın Kenarlıklı (Border & Radius) Estetik Tasarım:**
+  - Başkent rozetleri düz dikdörtgen kutular yerine CPU üzerinde Signed Distance Field (SDF) ile antialiased olarak oluşturulan `5.5px` köşe yarıçapına ve `1.2px` altın/pirinç çerçeveye (`[178, 148, 92, 220]`) sahip dokularla çizilir.
+  - Arka plan yarı saydam koyu lacivert/antrasit tonundadır (`[12, 16, 24, 235]`); metinler Inter-Bold tipografisiyle parşömen beyazı tonunda okunur.
+- **Global Eliptik Spiral Anti-Collision Motoru (Tüm Dünya İçin Çakışma Önleyici):**
+  - Başkent rozetlerinin dünya üzerindeki hiçbir noktada birbiriyle üst üste binmemesi matematiksel olarak garanti altına alınmıştır:
+    1. Öncelikle adanın veya şehrin doğal koordinatı ve mikro-bölgesel yön tercihleri (KKTC/Güney Kıbrıs, İsrail/Filistin/Ürdün, Vatikan/Roma, Monako, Kongo/DRC vb.) test edilir.
+    2. Eğer herhangi bir çakışma tespit edilirse, solver eliptik spiral arama halkaları (R: 15px .. 190px, 24 aşamalı 16 açısal yön) ile en yakın çakışmasız pozisyonu anında bulup yerleştirir.
+    3. Normal koordinatların yanı sıra haritanın doğu ve batı sonsuz döngü kopyalarındaki (`MAP_WIDTH_F32`) çakışmalar da eşzamanlı taranır. Dünyanın hiçbir yerinde başkent rozetleri birbiriyle çakışmaz.
 
-### 4.5. Siyasi Harita Boyama & Renk Değiştirme ([src/map.rs](file:///home/wurathh/Desktop/Dawn%20of%20Civilization/src/map.rs#L1820-L1900))
+### 4.5. İmleç Altı Dinamik Şehir & Eyalet Hover Tooltip Sistemi ([`ProvinceHoverTooltipRoot`](file:///home/wurathh/Desktop/Dawn%20of%20Civilization/src/map.rs#L145-L152))
+- **Minimalist ve Net Tasarım (Yalnızca Bayrak + İl İsmi):**
+  - Kullanıcı isteği doğrultusunda alt bilgi kalabalığı (kıta, kalkınma, ülke adı vb.) tamamen kaldırılarak kart tek bir satırda sadece ait olduğu ülkenin **Bayrağı (18x12px)** ve okunaklı **Şehir / İl İsmi** olarak sadeleştirilmiştir.
+  - Kart altın/çelik zarif çerçeveye (`border: 1.2px`), yumuşak yuvarlak köşelere (`border_radius: 7.0px`) ve koyu arka plana sahiptir.
+- **Akıllı Gecikmeli Açılma (Anti-Flicker Delay ~0.30s):**
+  - Fare harita üzerinde hızla kaydırılırken tooltip'lerin ekranda ardı ardına yanıp sönmesini engellemek için `ProvinceHoverTooltipTimer` ile 0.30 saniyelik mikro bekleme süresi uygulanır.
+  - İmleç belirli bir şehir/eyalet üzerinde durduğunda kart pürüzsüzce açılır; fare açık denize, UI'a veya başka bir bölgeye kaydığı anda anında gizlenir.
+- **Ekran Kenar Koruması (Boundary Clamping):**
+  - Tooltip imlecin `+16px, +20px` sağ-altında konumlanır.
+  - Pencerenin sağ veya alt kenarına yaklaşıldığında taşma yapmaması için otomatik olarak imlecin soluna veya üstüne ötelenir.
+- **Ölçülü Dikey Kaydırma/Scroll Alanı (Vertical Camera Margins):**
+  - Haritanın en kuzey ve en güney uçlarındaki şehirlere (İskandinavya, Kuzey Rusya, Grönland, Patagonya/Şili vb.) rahatça odaklanılabilmesi için dikey sınırlayıcıya gereksiz boşluk yaratmayacak ölçülü bir kaydırma payı (`margin_y = half_view_h_target * 0.12 + 80.0`) uygulanmıştır.
+- **Akıllı Kıyı ve Sınır Tıklama Toleransı (Click Snapping):**
+  - `province_interaction` sisteminde 3-4 piksellik arama yarıçapı ile kıyı ve sınır pikselleri akıllıca en yakın ile yakalanır (`snap`). Küçük adalar ve kıyı kasabaları tek tıkla kolayca seçilebilir.
+
+### 4.6. Siyasi Harita Boyama & Renk Değiştirme ([src/map.rs](file:///home/wurathh/Desktop/Dawn%20of%20Civilization/src/map.rs#L1820-L1900))
 - `recolor_country_on_map` fonksiyonu, bir ülkenin tüm eyalet piksellerini CPU üzerindeki Batı ve Doğu doku arabelleğinde yeni renkle günceller ve dokuyu anında yeniden GPU'ya gönderir.
 - Menüdeki "Rengi Değiştir" butonu ile herhangi bir ülkenin siyasi harita rengi çalışma zamanında canlı olarak rastgele üretilen estetik renklerle güncellenebilir.
 

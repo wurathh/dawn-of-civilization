@@ -3,6 +3,9 @@ use crate::map::{
 };
 use crate::scenario::{format_number, ActiveScenario};
 use crate::state::{AppState, GameSession, GameSettings, UiFonts};
+use crate::ui::{
+    spawn_button, spawn_gold_divider, ButtonSize, ButtonVariant, Theme,
+};
 use bevy::app::AppExit;
 use bevy::picking::prelude::*;
 use bevy::prelude::*;
@@ -68,12 +71,6 @@ struct SelectedCivFlagNode;
 #[derive(Component)]
 struct SelectedCivColorBadge;
 
-#[derive(Clone, Copy)]
-enum MainMenuAction {
-    NewGame,
-    Exit,
-}
-
 /// `assets/backgrounds` klasöründeki tüm resimleri (.png, .jpg, .jpeg, .webp) tarar
 /// ve her çağrıldığında rastgele bir tanesinin asset yolunu döndürür.
 fn pick_random_background_image() -> Option<String> {
@@ -116,6 +113,7 @@ fn setup_main_menu(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
     fonts: Res<UiFonts>,
+    theme: Res<Theme>,
 ) {
     let bg_image_opt = pick_random_background_image();
 
@@ -128,10 +126,10 @@ fn setup_main_menu(
                 flex_direction: FlexDirection::Row,
                 justify_content: JustifyContent::FlexStart,
                 align_items: AlignItems::Center,
-                padding: UiRect::left(Val::Px(64.0)),
+                padding: UiRect::left(theme.spacing.val_xxl()),
                 ..default()
             },
-            BackgroundColor(Color::srgb(0.04, 0.05, 0.08)),
+            BackgroundColor(theme.colors.bg_base),
             MainMenuRoot,
         ))
         .with_children(|root| {
@@ -165,29 +163,31 @@ fn setup_main_menu(
                     height: Val::Percent(100.0),
                     ..default()
                 },
-                BackgroundColor(Color::srgba(0.03, 0.04, 0.07, 0.45)),
+                BackgroundColor(theme.colors.overlay_dim()),
                 Pickable::IGNORE,
             ));
 
-            // 3. Modern Yüzen (Floating) Ana Menü Kartı
+            // 3. Modern Yüzen (Floating) Ana Menü Kartı (Saf Rust %100 Opak Asil Obsidyen + Altın Kenarlık)
             root.spawn((
                 Node {
-                    width: Val::Px(450.0),
-                    padding: UiRect::all(Val::Px(38.0)),
+                    width: Val::Px(460.0),
+                    padding: UiRect::all(theme.spacing.val_xl()),
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(30.0),
+                    row_gap: theme.spacing.val_lg(),
+                    position_type: PositionType::Relative,
+                    overflow: Overflow::clip(),
                     border: UiRect::all(Val::Px(1.5)),
-                    border_radius: BorderRadius::all(Val::Px(22.0)),
+                    border_radius: BorderRadius::all(Val::Px(theme.radius.lg)),
                     ..default()
                 },
-                BackgroundColor(Color::srgba(0.05, 0.07, 0.12, 0.92)),
-                BorderColor::all(Color::srgba(0.84, 0.71, 0.40, 0.80)),
+                BackgroundColor(Color::srgb(0.06, 0.08, 0.11)),
+                BorderColor::all(Color::srgb(0.78, 0.62, 0.28)),
             ))
             .with_children(|card| {
                 // Başlık
                 card.spawn(Node {
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(8.0),
+                    row_gap: theme.spacing.val_xs(),
                     ..default()
                 })
                 .with_children(|header| {
@@ -195,59 +195,59 @@ fn setup_main_menu(
                         Text::new("DAWN OF\nCIVILIZATION"),
                         TextFont {
                             font: fonts.display.clone(),
-                            font_size: FontSize::Px(42.0),
+                            font_size: FontSize::Px(theme.typography.display),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.97, 0.89, 0.65)),
+                        TextColor(Color::srgb(0.94, 0.82, 0.45)),
                     ));
 
-                    header.spawn((
-                        Node {
-                            width: Val::Px(140.0),
-                            height: Val::Px(3.0),
-                            margin: UiRect::vertical(Val::Px(6.0)),
-                            border_radius: BorderRadius::all(Val::Px(2.0)),
-                            ..default()
-                        },
-                        BackgroundColor(Color::srgba(0.86, 0.72, 0.38, 0.90)),
-                    ));
+                    spawn_gold_divider(header, &theme, Val::Px(160.0));
 
                     header.spawn((
                         Text::new("Büyük Strateji ve Dünya Hakimiyeti"),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(15.0),
+                            font_size: FontSize::Px(theme.typography.body_md()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.75, 0.79, 0.86)),
+                        TextColor(theme.colors.text_secondary),
                     ));
                 });
 
-                // Menü Butonları: Yalnızca "Yeni Oyun Oluştur" ve "Oyundan Çık"
+                // Menü Butonları: "Yeni Oyun Oluştur" ve "Oyundan Çık" (Zarif Solid Butonlar)
                 card.spawn(Node {
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(16.0),
+                    row_gap: theme.spacing.val_sm(),
                     width: Val::Percent(100.0),
                     ..default()
                 })
                 .with_children(|buttons| {
-                    spawn_main_menu_button(
+                    let mut new_game_btn = spawn_button(
                         buttons,
+                        &theme,
                         &fonts,
-                        "▶",
-                        "Yeni Oyun Oluştur",
-                        "Senaryo ve ülke seçerek dünyayı yönet",
-                        MainMenuAction::NewGame,
-                        true,
+                        "YENİ OYUN OLUŞTUR",
+                        ButtonVariant::Primary,
+                        ButtonSize::Large,
                     );
-                    spawn_main_menu_button(
+                    new_game_btn.observe(
+                        |_: On<PointerClick>, mut next_state: ResMut<NextState<AppState>>| {
+                            next_state.set(AppState::ScenarioCatalog);
+                        },
+                    );
+
+                    let mut exit_btn = spawn_button(
                         buttons,
+                        &theme,
                         &fonts,
-                        "✕",
-                        "Oyundan Çık",
-                        "Masaüstüne dön",
-                        MainMenuAction::Exit,
-                        false,
+                        "OYUNDAN ÇIK",
+                        ButtonVariant::Secondary,
+                        ButtonSize::Large,
+                    );
+                    exit_btn.observe(
+                        |_: On<PointerClick>, mut exit_writer: MessageWriter<AppExit>| {
+                            exit_writer.write(AppExit::Success);
+                        },
                     );
                 });
 
@@ -256,7 +256,7 @@ fn setup_main_menu(
                     width: Val::Percent(100.0),
                     justify_content: JustifyContent::SpaceBetween,
                     align_items: AlignItems::Center,
-                    padding: UiRect::top(Val::Px(6.0)),
+                    padding: UiRect::top(theme.spacing.val_xs()),
                     ..default()
                 })
                 .with_children(|footer| {
@@ -264,168 +264,21 @@ fn setup_main_menu(
                         Text::new("Sürüm 0.1.0"),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(12.5),
+                            font_size: FontSize::Px(theme.typography.caption),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.54, 0.58, 0.66)),
+                        TextColor(theme.colors.text_disabled),
                     ));
                     footer.spawn((
                         Text::new("6.133 Şehir  •  203 Ülke"),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(12.5),
+                            font_size: FontSize::Px(theme.typography.caption),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.68, 0.62, 0.46)),
+                        TextColor(theme.colors.accent_muted()),
                     ));
                 });
-            });
-        });
-}
-
-fn spawn_main_menu_button(
-    parent: &mut ChildSpawnerCommands,
-    fonts: &UiFonts,
-    badge_symbol: &str,
-    title: &str,
-    subtitle: &str,
-    action: MainMenuAction,
-    is_primary: bool,
-) {
-    let base_bg = if is_primary {
-        Color::srgba(0.20, 0.16, 0.08, 0.96)
-    } else {
-        Color::srgba(0.10, 0.13, 0.19, 0.90)
-    };
-    let hover_bg = if is_primary {
-        Color::srgba(0.28, 0.22, 0.10, 0.99)
-    } else {
-        Color::srgba(0.16, 0.20, 0.29, 0.98)
-    };
-    let base_border = if is_primary {
-        Color::srgba(0.86, 0.72, 0.38, 0.88)
-    } else {
-        Color::srgba(0.38, 0.44, 0.55, 0.60)
-    };
-    let hover_border = if is_primary {
-        Color::srgb(0.99, 0.88, 0.52)
-    } else {
-        Color::srgb(0.65, 0.75, 0.92)
-    };
-    let badge_bg = if is_primary {
-        Color::srgba(0.86, 0.72, 0.38, 0.25)
-    } else {
-        Color::srgba(0.38, 0.44, 0.55, 0.25)
-    };
-
-    parent
-        .spawn((
-            Node {
-                width: Val::Percent(100.0),
-                padding: UiRect::axes(Val::Px(18.0), Val::Px(14.0)),
-                flex_direction: FlexDirection::Row,
-                align_items: AlignItems::Center,
-                column_gap: Val::Px(16.0),
-                border: UiRect::all(Val::Px(1.5)),
-                border_radius: BorderRadius::all(Val::Px(14.0)),
-                ..default()
-            },
-            BackgroundColor(base_bg),
-            BorderColor::all(base_border),
-        ))
-        .observe(
-            move |ev: On<PointerOver>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
-                if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
-                    bg.0 = hover_bg;
-                    *border = BorderColor::all(hover_border);
-                }
-            },
-        )
-        .observe(
-            move |ev: On<PointerOut>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
-                if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
-                    bg.0 = base_bg;
-                    *border = BorderColor::all(base_border);
-                }
-            },
-        )
-        .observe(
-            move |_: On<PointerClick>,
-                  mut next_state: ResMut<NextState<AppState>>,
-                  mut exit_writer: MessageWriter<AppExit>| {
-                match action {
-                    MainMenuAction::NewGame => {
-                        next_state.set(AppState::ScenarioCatalog);
-                    }
-                    MainMenuAction::Exit => {
-                        exit_writer.write(AppExit::Success);
-                    }
-                }
-            },
-        )
-        .with_children(|btn| {
-            btn.spawn((
-                Node {
-                    width: Val::Px(42.0),
-                    height: Val::Px(42.0),
-                    justify_content: JustifyContent::Center,
-                    align_items: AlignItems::Center,
-                    border_radius: BorderRadius::all(Val::Px(10.0)),
-                    ..default()
-                },
-                BackgroundColor(badge_bg),
-                Pickable::IGNORE,
-            ))
-            .with_children(|icon_box| {
-                icon_box.spawn((
-                    Text::new(badge_symbol),
-                    TextFont {
-                        font: fonts.heading.clone(),
-                        font_size: FontSize::Px(18.0),
-                        ..default()
-                    },
-                    TextColor(if is_primary {
-                        Color::srgb(0.98, 0.88, 0.55)
-                    } else {
-                        Color::srgb(0.82, 0.86, 0.94)
-                    }),
-                    Pickable::IGNORE,
-                ));
-            });
-
-            btn.spawn((
-                Node {
-                    flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(3.0),
-                    ..default()
-                },
-                Pickable::IGNORE,
-            ))
-            .with_children(|text_col| {
-                text_col.spawn((
-                    Text::new(title),
-                    TextFont {
-                        font: fonts.heading.clone(),
-                        font_size: FontSize::Px(17.5),
-                        ..default()
-                    },
-                    TextColor(if is_primary {
-                        Color::srgb(0.99, 0.92, 0.70)
-                    } else {
-                        Color::srgb(0.94, 0.95, 0.97)
-                    }),
-                    Pickable::IGNORE,
-                ));
-                text_col.spawn((
-                    Text::new(subtitle),
-                    TextFont {
-                        font: fonts.medium.clone(),
-                        font_size: FontSize::Px(12.5),
-                        ..default()
-                    },
-                    TextColor(Color::srgb(0.66, 0.70, 0.78)),
-                    Pickable::IGNORE,
-                ));
             });
         });
 }
@@ -445,6 +298,7 @@ fn setup_scenario_catalog(
     asset_server: Res<AssetServer>,
     fonts: Res<UiFonts>,
     scenario: Res<ActiveScenario>,
+    theme: Res<Theme>,
 ) {
     let bg_image_opt = pick_random_background_image();
 
@@ -457,10 +311,10 @@ fn setup_scenario_catalog(
                 flex_direction: FlexDirection::Column,
                 justify_content: JustifyContent::SpaceBetween,
                 align_items: AlignItems::Center,
-                padding: UiRect::all(Val::Px(36.0)),
+                padding: UiRect::all(theme.spacing.val_xl()),
                 ..default()
             },
-            BackgroundColor(Color::srgb(0.04, 0.05, 0.08)),
+            BackgroundColor(theme.colors.bg_base),
             ScenarioCatalogRoot,
         ))
         .with_children(|root| {
@@ -494,7 +348,7 @@ fn setup_scenario_catalog(
                     height: Val::Percent(100.0),
                     ..default()
                 },
-                BackgroundColor(Color::srgba(0.03, 0.04, 0.07, 0.60)),
+                BackgroundColor(theme.colors.overlay_dim()),
                 Pickable::IGNORE,
             ));
 
@@ -502,7 +356,7 @@ fn setup_scenario_catalog(
             root.spawn(Node {
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::Center,
-                row_gap: Val::Px(6.0),
+                row_gap: theme.spacing.val_xs(),
                 ..default()
             })
             .with_children(|header| {
@@ -510,37 +364,43 @@ fn setup_scenario_catalog(
                     Text::new("SENARYO SEÇİMİ"),
                     TextFont {
                         font: fonts.display.clone(),
-                        font_size: FontSize::Px(38.0),
+                        font_size: FontSize::Px(theme.typography.display),
                         ..default()
                     },
-                    TextColor(Color::srgb(0.97, 0.89, 0.65)),
+                    TextColor(theme.colors.accent),
                 ));
+
+                spawn_gold_divider(header, &theme, Val::Px(180.0));
+
                 header.spawn((
                     Text::new("Yönetmek istediğiniz çağı ve jeopolitik senaryoyu belirleyin"),
                     TextFont {
                         font: fonts.medium.clone(),
-                        font_size: FontSize::Px(15.0),
+                        font_size: FontSize::Px(theme.typography.body_md()),
                         ..default()
                     },
-                    TextColor(Color::srgb(0.74, 0.78, 0.85)),
+                    TextColor(theme.colors.text_secondary),
                 ));
             });
 
-            // Orta: Senaryo Kartı (Modern Dünya)
+            // Orta: Senaryo Kartı (Saf Rust %100 Opak Asil Obsidyen + Altın Kenarlık)
             root.spawn((
                 Node {
                     width: Val::Px(640.0),
-                    padding: UiRect::all(Val::Px(32.0)),
+                    padding: UiRect::all(theme.spacing.val_xl()),
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(20.0),
-                    border: UiRect::all(Val::Px(2.0)),
-                    border_radius: BorderRadius::all(Val::Px(20.0)),
+                    row_gap: theme.spacing.val_lg(),
+                    position_type: PositionType::Relative,
+                    overflow: Overflow::clip(),
+                    border: UiRect::all(Val::Px(1.5)),
+                    border_radius: BorderRadius::all(Val::Px(theme.radius.lg)),
                     ..default()
                 },
-                BackgroundColor(Color::srgba(0.05, 0.07, 0.12, 0.94)),
-                BorderColor::all(Color::srgba(0.86, 0.72, 0.38, 0.90)),
+                BackgroundColor(Color::srgb(0.06, 0.08, 0.11)),
+                BorderColor::all(Color::srgb(0.78, 0.62, 0.28)),
             ))
             .with_children(|card| {
+
                 // Senaryo Başlık Satırı
                 card.spawn(Node {
                     flex_direction: FlexDirection::Row,
@@ -553,28 +413,30 @@ fn setup_scenario_catalog(
                         Text::new("🌍  Modern Dünya"),
                         TextFont {
                             font: fonts.display.clone(),
-                            font_size: FontSize::Px(28.0),
+                            font_size: FontSize::Px(theme.typography.headline),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.98, 0.92, 0.76)),
+                        TextColor(theme.colors.accent),
                     ));
                     row.spawn((
                         Node {
-                            padding: UiRect::axes(Val::Px(12.0), Val::Px(5.0)),
-                            border_radius: BorderRadius::all(Val::Px(8.0)),
+                            padding: UiRect::axes(theme.spacing.val_sm(), theme.spacing.val_xs()),
+                            border_radius: BorderRadius::all(theme.radius.val_sm()),
+                            border: UiRect::all(Val::Px(theme.borders.thin)),
                             ..default()
                         },
-                        BackgroundColor(Color::srgba(0.20, 0.45, 0.25, 0.90)),
+                        BackgroundColor(theme.colors.surface_panel()),
+                        BorderColor::all(theme.colors.accent_muted()),
                     ))
                     .with_children(|badge| {
                         badge.spawn((
                             Text::new("2026 Çağı"),
                             TextFont {
                                 font: fonts.heading.clone(),
-                                font_size: FontSize::Px(13.0),
+                                font_size: FontSize::Px(theme.typography.label_md()),
                                 ..default()
                             },
-                            TextColor(Color::srgb(0.95, 1.0, 0.95)),
+                            TextColor(theme.colors.accent_hover),
                         ));
                     });
                 });
@@ -586,18 +448,18 @@ fn setup_scenario_catalog(
                     ),
                     TextFont {
                         font: fonts.medium.clone(),
-                        font_size: FontSize::Px(14.5),
+                        font_size: FontSize::Px(theme.typography.body_md()),
                         ..default()
                     },
-                    TextColor(Color::srgb(0.80, 0.83, 0.89)),
+                    TextColor(theme.colors.text_secondary),
                 ));
 
                 // İstatistik Rozetleri
                 card.spawn(Node {
                     flex_direction: FlexDirection::Row,
                     justify_content: JustifyContent::SpaceBetween,
-                    column_gap: Val::Px(12.0),
-                    margin: UiRect::vertical(Val::Px(4.0)),
+                    column_gap: theme.spacing.val_sm(),
+                    margin: UiRect::vertical(theme.spacing.val_xs()),
                     ..default()
                 })
                 .with_children(|stats| {
@@ -610,69 +472,49 @@ fn setup_scenario_catalog(
                         stats.spawn((
                             Node {
                                 flex_grow: 1.0,
-                                padding: UiRect::axes(Val::Px(12.0), Val::Px(10.0)),
+                                padding: UiRect::axes(theme.spacing.val_sm(), theme.spacing.val_sm()),
                                 flex_direction: FlexDirection::Column,
-                                row_gap: Val::Px(3.0),
-                                border: UiRect::all(Val::Px(1.0)),
-                                border_radius: BorderRadius::all(Val::Px(10.0)),
+                                row_gap: theme.spacing.val_xxs(),
+                                border: UiRect::all(Val::Px(theme.borders.thin)),
+                                border_radius: BorderRadius::all(theme.radius.val_md()),
                                 ..default()
                             },
-                            BackgroundColor(Color::srgba(0.10, 0.13, 0.20, 0.85)),
-                            BorderColor::all(Color::srgba(0.35, 0.40, 0.52, 0.50)),
+                            BackgroundColor(theme.colors.surface_panel()),
+                            BorderColor::all(theme.colors.border_subtle),
                         ))
                         .with_children(|box_col| {
                             box_col.spawn((
                                 Text::new(val),
                                 TextFont {
                                     font: fonts.heading.clone(),
-                                    font_size: FontSize::Px(14.0),
+                                    font_size: FontSize::Px(theme.typography.title_sm()),
                                     ..default()
                                 },
-                                TextColor(Color::srgb(0.96, 0.88, 0.65)),
+                                TextColor(theme.colors.accent),
                             ));
                             box_col.spawn((
                                 Text::new(desc),
                                 TextFont {
                                     font: fonts.medium.clone(),
-                                    font_size: FontSize::Px(11.0),
+                                    font_size: FontSize::Px(theme.typography.caption),
                                     ..default()
                                 },
-                                TextColor(Color::srgb(0.62, 0.67, 0.75)),
+                                TextColor(theme.colors.text_secondary),
                             ));
                         });
                     }
                 });
 
-                // Senaryoyu Seç Butonu
-                card.spawn((
-                    Node {
-                        width: Val::Percent(100.0),
-                        padding: UiRect::vertical(Val::Px(16.0)),
-                        justify_content: JustifyContent::Center,
-                        align_items: AlignItems::Center,
-                        border: UiRect::all(Val::Px(1.5)),
-                        border_radius: BorderRadius::all(Val::Px(14.0)),
-                        margin: UiRect::top(Val::Px(6.0)),
-                        ..default()
-                    },
-                    BackgroundColor(Color::srgba(0.16, 0.46, 0.24, 0.96)),
-                    BorderColor::all(Color::srgba(0.55, 0.90, 0.60, 0.95)),
-                ))
-                .observe(
-                    |ev: On<PointerOver>, mut bg_q: Query<&mut BackgroundColor>| {
-                        if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                            bg.0 = Color::srgba(0.22, 0.58, 0.30, 0.99);
-                        }
-                    },
-                )
-                .observe(
-                    |ev: On<PointerOut>, mut bg_q: Query<&mut BackgroundColor>| {
-                        if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                            bg.0 = Color::srgba(0.16, 0.46, 0.24, 0.96);
-                        }
-                    },
-                )
-                .observe(
+                // Senaryoyu Seç Butonu (Saf Rust Solid Primary Button)
+                let mut start_btn = spawn_button(
+                    card,
+                    &theme,
+                    &fonts,
+                    "Senaryoyu Başlat & Haritaya Geç  ▶",
+                    ButtonVariant::Primary,
+                    ButtonSize::Large,
+                );
+                start_btn.observe(
                     |_: On<PointerClick>,
                      mut rig: ResMut<CameraRig>,
                      mut next_state: ResMut<NextState<AppState>>| {
@@ -680,19 +522,7 @@ fn setup_scenario_catalog(
                         rig.target_scale = 0.85;
                         next_state.set(AppState::ScenarioSelect);
                     },
-                )
-                .with_children(|btn| {
-                    btn.spawn((
-                        Text::new("Senaryoyu Başlat & Haritaya Geç  ▶"),
-                        TextFont {
-                            font: fonts.heading.clone(),
-                            font_size: FontSize::Px(18.0),
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.97, 1.0, 0.97)),
-                        Pickable::IGNORE,
-                    ));
-                });
+                );
             });
 
             // Alt Bar: Ana Menüye Dön
@@ -702,48 +532,19 @@ fn setup_scenario_catalog(
                 ..default()
             })
             .with_children(|footer| {
-                footer
-                    .spawn((
-                        Node {
-                            padding: UiRect::axes(Val::Px(18.0), Val::Px(10.0)),
-                            border: UiRect::all(Val::Px(1.5)),
-                            border_radius: BorderRadius::all(Val::Px(12.0)),
-                            ..default()
-                        },
-                        BackgroundColor(Color::srgba(0.11, 0.14, 0.21, 0.92)),
-                        BorderColor::all(Color::srgba(0.60, 0.52, 0.36, 0.75)),
-                    ))
-                    .observe(
-                        |ev: On<PointerOver>, mut bg_q: Query<&mut BackgroundColor>| {
-                            if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                bg.0 = Color::srgba(0.20, 0.25, 0.36, 0.98);
-                            }
-                        },
-                    )
-                    .observe(
-                        |ev: On<PointerOut>, mut bg_q: Query<&mut BackgroundColor>| {
-                            if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                bg.0 = Color::srgba(0.11, 0.14, 0.21, 0.92);
-                            }
-                        },
-                    )
-                    .observe(
-                        |_: On<PointerClick>, mut next_state: ResMut<NextState<AppState>>| {
-                            next_state.set(AppState::MainMenu);
-                        },
-                    )
-                    .with_children(|btn| {
-                        btn.spawn((
-                            Text::new("← Ana Menüye Dön"),
-                            TextFont {
-                                font: fonts.heading.clone(),
-                                font_size: FontSize::Px(14.0),
-                                ..default()
-                            },
-                            TextColor(Color::srgb(0.93, 0.90, 0.82)),
-                            Pickable::IGNORE,
-                        ));
-                    });
+                let mut back_btn = spawn_button(
+                    footer,
+                    &theme,
+                    &fonts,
+                    "◀  Ana Menüye Dön",
+                    ButtonVariant::Secondary,
+                    ButtonSize::Medium,
+                );
+                back_btn.observe(
+                    |_: On<PointerClick>, mut next_state: ResMut<NextState<AppState>>| {
+                        next_state.set(AppState::MainMenu);
+                    },
+                );
             });
         });
 }
@@ -765,6 +566,7 @@ fn setup_scenario_select(
     session: Res<GameSession>,
     _settings: Res<GameSettings>,
     fonts: Res<UiFonts>,
+    theme: Res<Theme>,
 ) {
     let selected_civ = scenario
         .civs
@@ -792,32 +594,32 @@ fn setup_scenario_select(
         ))
         .with_children(|root| {
             // ----------------------------------------------------------------
-            // 1. SOL TARAF: SEÇİLEN ÜLKE BİLGİ POPUP KARTI (Dossier Panel)
+            // 1. SOL TARAF: SEÇİLEN ÜLKE BİLGİ POPUP KARTI (Saf Rust %100 Opak Asil Obsidyen + Altın Çerçeve)
             // ----------------------------------------------------------------
             root.spawn((
                 Node {
                     position_type: PositionType::Absolute,
-                    top: Val::Px(20.0),
-                    left: Val::Px(24.0),
+                    top: theme.spacing.val_lg(),
+                    left: theme.spacing.val_lg(),
                     bottom: Val::Px(88.0),
                     width: Val::Px(390.0),
-                    padding: UiRect::all(Val::Px(20.0)),
+                    padding: UiRect::all(theme.spacing.val_lg()),
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(12.0),
-                    border: UiRect::all(Val::Px(1.5)),
-                    border_radius: BorderRadius::all(Val::Px(18.0)),
+                    row_gap: theme.spacing.val_md(),
                     overflow: Overflow::clip_y(),
+                    border: UiRect::all(Val::Px(1.5)),
+                    border_radius: BorderRadius::all(Val::Px(theme.radius.lg)),
                     ..default()
                 },
-                BackgroundColor(Color::srgba(0.04, 0.06, 0.11, 0.95)),
-                BorderColor::all(Color::srgba(0.84, 0.71, 0.40, 0.85)),
+                BackgroundColor(Color::srgb(0.06, 0.08, 0.11)),
+                BorderColor::all(Color::srgb(0.78, 0.62, 0.28)),
             ))
             .with_children(|card| {
                 // Başlık & Bayrak
                 card.spawn(Node {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
-                    column_gap: Val::Px(14.0),
+                    column_gap: theme.spacing.val_md(),
                     ..default()
                 })
                 .with_children(|hdr| {
@@ -825,8 +627,8 @@ fn setup_scenario_select(
                         width: Val::Px(64.0),
                         height: Val::Px(42.0),
                         position_type: PositionType::Relative,
-                        border: UiRect::all(Val::Px(1.5)),
-                        border_radius: BorderRadius::all(Val::Px(6.0)),
+                        border: UiRect::all(Val::Px(theme.borders.thin)),
+                        border_radius: BorderRadius::all(theme.radius.val_sm()),
                         overflow: Overflow::clip(),
                         ..default()
                     })
@@ -871,17 +673,17 @@ fn setup_scenario_select(
                             Text::new(&selected_civ.name),
                             TextFont {
                                 font: fonts.display.clone(),
-                                font_size: FontSize::Px(22.0),
+                                font_size: FontSize::Px(theme.typography.headline),
                                 ..default()
                             },
-                            TextColor(Color::srgb(0.98, 0.92, 0.76)),
+                            TextColor(theme.colors.accent),
                             CivInfoField::Name,
                         ));
 
                         col.spawn(Node {
                             flex_direction: FlexDirection::Row,
                             align_items: AlignItems::Center,
-                            column_gap: Val::Px(6.0),
+                            column_gap: theme.spacing.val_xs(),
                             ..default()
                         })
                         .with_children(|sub| {
@@ -903,10 +705,10 @@ fn setup_scenario_select(
                                 Text::new(format!("Başkent: {}", selected_civ.capital_name)),
                                 TextFont {
                                     font: fonts.medium.clone(),
-                                    font_size: FontSize::Px(13.0),
+                                    font_size: FontSize::Px(theme.typography.label_md()),
                                     ..default()
                                 },
-                                TextColor(Color::srgb(0.78, 0.82, 0.90)),
+                                TextColor(theme.colors.text_secondary),
                                 CivInfoField::Capital,
                             ));
                         });
@@ -917,45 +719,45 @@ fn setup_scenario_select(
                 card.spawn((
                     Node {
                         width: Val::Percent(100.0),
-                        padding: UiRect::all(Val::Px(12.0)),
+                        padding: UiRect::all(theme.spacing.val_md()),
                         flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(6.0),
-                        border: UiRect::all(Val::Px(1.0)),
-                        border_radius: BorderRadius::all(Val::Px(10.0)),
+                        row_gap: theme.spacing.val_xs(),
+                        border: UiRect::all(Val::Px(theme.borders.thin)),
+                        border_radius: BorderRadius::all(theme.radius.val_md()),
                         ..default()
                     },
-                    BackgroundColor(Color::srgba(0.08, 0.11, 0.18, 0.90)),
-                    BorderColor::all(Color::srgba(0.35, 0.40, 0.55, 0.50)),
+                    BackgroundColor(theme.colors.surface_panel()),
+                    BorderColor::all(theme.colors.border_subtle),
                 ))
                 .with_children(|b| {
                     b.spawn((
                         Text::new(format!("Lider: {} ({})", leader_name, leader_title)),
                         TextFont {
                             font: fonts.heading.clone(),
-                            font_size: FontSize::Px(13.0),
+                            font_size: FontSize::Px(theme.typography.label_lg()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.96, 0.88, 0.65)),
+                        TextColor(theme.colors.accent),
                         CivInfoField::Leader,
                     ));
                     b.spawn((
                         Text::new(format!("Yönetim: {}", gov_type)),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(12.5),
+                            font_size: FontSize::Px(theme.typography.body_sm()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.80, 0.84, 0.92)),
+                        TextColor(theme.colors.text_secondary),
                         CivInfoField::Gov,
                     ));
                     b.spawn((
                         Text::new(format!("Dini: {}", religion)),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(12.5),
+                            font_size: FontSize::Px(theme.typography.body_sm()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.80, 0.84, 0.92)),
+                        TextColor(theme.colors.text_secondary),
                         CivInfoField::Religion,
                     ));
                 });
@@ -964,15 +766,15 @@ fn setup_scenario_select(
                 card.spawn((
                     Node {
                         width: Val::Percent(100.0),
-                        padding: UiRect::all(Val::Px(12.0)),
+                        padding: UiRect::all(theme.spacing.val_md()),
                         flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(6.0),
-                        border: UiRect::all(Val::Px(1.0)),
-                        border_radius: BorderRadius::all(Val::Px(10.0)),
+                        row_gap: theme.spacing.val_xs(),
+                        border: UiRect::all(Val::Px(theme.borders.thin)),
+                        border_radius: BorderRadius::all(theme.radius.val_md()),
                         ..default()
                     },
-                    BackgroundColor(Color::srgba(0.08, 0.11, 0.18, 0.90)),
-                    BorderColor::all(Color::srgba(0.35, 0.40, 0.55, 0.50)),
+                    BackgroundColor(theme.colors.surface_panel()),
+                    BorderColor::all(theme.colors.border_subtle),
                 ))
                 .with_children(|b| {
                     b.spawn((
@@ -985,10 +787,10 @@ fn setup_scenario_select(
                         )),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(12.5),
+                            font_size: FontSize::Px(theme.typography.body_sm()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.85, 0.88, 0.94)),
+                        TextColor(theme.colors.text_primary),
                         CivInfoField::Stats,
                     ));
                 });
@@ -997,35 +799,35 @@ fn setup_scenario_select(
                 card.spawn((
                     Node {
                         width: Val::Percent(100.0),
-                        padding: UiRect::all(Val::Px(12.0)),
+                        padding: UiRect::all(theme.spacing.val_md()),
                         flex_direction: FlexDirection::Column,
-                        row_gap: Val::Px(6.0),
-                        border: UiRect::all(Val::Px(1.0)),
-                        border_radius: BorderRadius::all(Val::Px(10.0)),
+                        row_gap: theme.spacing.val_xs(),
+                        border: UiRect::all(Val::Px(theme.borders.thin)),
+                        border_radius: BorderRadius::all(theme.radius.val_md()),
                         ..default()
                     },
-                    BackgroundColor(Color::srgba(0.08, 0.11, 0.18, 0.90)),
-                    BorderColor::all(Color::srgba(0.35, 0.40, 0.55, 0.50)),
+                    BackgroundColor(theme.colors.surface_panel()),
+                    BorderColor::all(theme.colors.border_subtle),
                 ))
                 .with_children(|b| {
                     b.spawn((
                         Text::new(format!("Müttefikler:\n{}", allies)),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(12.0),
+                            font_size: FontSize::Px(theme.typography.body_sm()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.55, 0.92, 0.65)),
+                        TextColor(theme.colors.success),
                         CivInfoField::Allies,
                     ));
                     b.spawn((
                         Text::new(format!("Rakipler:\n{}", rivals)),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(12.0),
+                            font_size: FontSize::Px(theme.typography.body_sm()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.94, 0.58, 0.55)),
+                        TextColor(theme.colors.danger),
                         CivInfoField::Rivals,
                     ));
                 });
@@ -1033,8 +835,8 @@ fn setup_scenario_select(
                 // Kutu 4: Ülke Rengi Özelleştirme Paleti
                 card.spawn(Node {
                     flex_direction: FlexDirection::Column,
-                    row_gap: Val::Px(6.0),
-                    margin: UiRect::top(Val::Px(2.0)),
+                    row_gap: theme.spacing.val_xs(),
+                    margin: UiRect::top(theme.spacing.val_xxs()),
                     ..default()
                 })
                 .with_children(|color_sec| {
@@ -1042,17 +844,17 @@ fn setup_scenario_select(
                         Text::new("Harita Rengini Özelleştir:"),
                         TextFont {
                             font: fonts.body.clone(),
-                            font_size: FontSize::Px(12.0),
+                            font_size: FontSize::Px(theme.typography.body_sm()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.75, 0.79, 0.86)),
+                        TextColor(theme.colors.text_secondary),
                     ));
 
                     color_sec
                         .spawn(Node {
                             flex_direction: FlexDirection::Row,
                             align_items: AlignItems::Center,
-                            column_gap: Val::Px(8.0),
+                            column_gap: theme.spacing.val_sm(),
                             ..default()
                         })
                         .with_children(|palette| {
@@ -1071,12 +873,12 @@ fn setup_scenario_select(
                                         Node {
                                             width: Val::Px(24.0),
                                             height: Val::Px(24.0),
-                                            border: UiRect::all(Val::Px(1.5)),
-                                            border_radius: BorderRadius::all(Val::Px(6.0)),
+                                            border: UiRect::all(Val::Px(theme.borders.thin)),
+                                            border_radius: BorderRadius::all(theme.radius.val_sm()),
                                             ..default()
                                         },
                                         BackgroundColor(Color::srgb_u8(rgb[0], rgb[1], rgb[2])),
-                                        BorderColor::all(Color::srgba(0.90, 0.88, 0.80, 0.65)),
+                                        BorderColor::all(theme.colors.border_subtle),
                                     ))
                                     .observe(
                                         |ev: On<PointerOver>, mut bq: Query<&mut BorderColor>| {
@@ -1086,9 +888,12 @@ fn setup_scenario_select(
                                         },
                                     )
                                     .observe(
-                                        |ev: On<PointerOut>, mut bq: Query<&mut BorderColor>| {
-                                            if let Ok(mut b) = bq.get_mut(ev.entity) {
-                                                *b = BorderColor::all(Color::srgba(0.90, 0.88, 0.80, 0.65));
+                                        {
+                                            let border_subtle = theme.colors.border_subtle;
+                                            move |ev: On<PointerOut>, mut bq: Query<&mut BorderColor>| {
+                                                if let Ok(mut b) = bq.get_mut(ev.entity) {
+                                                    *b = BorderColor::all(border_subtle);
+                                                }
                                             }
                                         },
                                     )
@@ -1110,13 +915,13 @@ fn setup_scenario_select(
                             palette
                                 .spawn((
                                     Node {
-                                        padding: UiRect::axes(Val::Px(8.0), Val::Px(4.0)),
-                                        border: UiRect::all(Val::Px(1.5)),
-                                        border_radius: BorderRadius::all(Val::Px(6.0)),
+                                        padding: UiRect::axes(theme.spacing.val_sm(), theme.spacing.val_xxs()),
+                                        border: UiRect::all(Val::Px(theme.borders.thin)),
+                                        border_radius: BorderRadius::all(theme.radius.val_sm()),
                                         ..default()
                                     },
-                                    BackgroundColor(Color::srgba(0.15, 0.19, 0.28, 0.95)),
-                                    BorderColor::all(Color::srgba(0.65, 0.72, 0.85, 0.75)),
+                                    BackgroundColor(theme.colors.surface_panel()),
+                                    BorderColor::all(theme.colors.border_subtle),
                                 ))
                                 .observe(
                                     |_: On<PointerClick>,
@@ -1137,10 +942,10 @@ fn setup_scenario_select(
                                         Text::new("🎲"),
                                         TextFont {
                                             font: fonts.body.clone(),
-                                            font_size: FontSize::Px(12.0),
+                                            font_size: FontSize::Px(theme.typography.body_sm()),
                                             ..default()
                                         },
-                                        TextColor(Color::srgb(0.92, 0.95, 1.0)),
+                                        TextColor(theme.colors.text_primary),
                                         Pickable::IGNORE,
                                     ));
                                 });
@@ -1151,13 +956,18 @@ fn setup_scenario_select(
             // ----------------------------------------------------------------
             // 2. SAĞ ÜST BAR: OYUN AYARLARI TUŞU & AÇILIR MODAL
             // ----------------------------------------------------------------
+            let settings_btn_bg = theme.colors.surface_panel();
+            let settings_btn_hover = theme.colors.surface_raised;
+            let settings_btn_border = theme.colors.border_subtle;
+            let settings_btn_border_hover = theme.colors.border_default;
+
             root.spawn(Node {
                 position_type: PositionType::Absolute,
-                top: Val::Px(20.0),
-                right: Val::Px(24.0),
+                top: theme.spacing.val_lg(),
+                right: theme.spacing.val_lg(),
                 flex_direction: FlexDirection::Column,
                 align_items: AlignItems::FlexEnd,
-                row_gap: Val::Px(10.0),
+                row_gap: theme.spacing.val_sm(),
                 ..default()
             })
             .with_children(|top_right| {
@@ -1165,27 +975,29 @@ fn setup_scenario_select(
                 top_right
                     .spawn((
                         Node {
-                            padding: UiRect::axes(Val::Px(18.0), Val::Px(10.0)),
-                            border: UiRect::all(Val::Px(1.5)),
-                            border_radius: BorderRadius::all(Val::Px(12.0)),
+                            padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_sm()),
+                            border: UiRect::all(Val::Px(theme.borders.default)),
+                            border_radius: BorderRadius::all(theme.radius.val_md()),
                             align_items: AlignItems::Center,
-                            column_gap: Val::Px(8.0),
+                            column_gap: theme.spacing.val_sm(),
                             ..default()
                         },
-                        BackgroundColor(Color::srgba(0.08, 0.11, 0.18, 0.95)),
-                        BorderColor::all(Color::srgba(0.84, 0.71, 0.40, 0.85)),
+                        BackgroundColor(settings_btn_bg),
+                        BorderColor::all(settings_btn_border),
                     ))
                     .observe(
-                        |ev: On<PointerOver>, mut bg_q: Query<&mut BackgroundColor>| {
-                            if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                bg.0 = Color::srgba(0.16, 0.22, 0.34, 0.99);
+                        move |ev: On<PointerOver>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                            if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
+                                bg.0 = settings_btn_hover;
+                                *border = BorderColor::all(settings_btn_border_hover);
                             }
                         },
                     )
                     .observe(
-                        |ev: On<PointerOut>, mut bg_q: Query<&mut BackgroundColor>| {
-                            if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                                bg.0 = Color::srgba(0.08, 0.11, 0.18, 0.95);
+                        move |ev: On<PointerOut>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                            if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
+                                bg.0 = settings_btn_bg;
+                                *border = BorderColor::all(settings_btn_border);
                             }
                         },
                     )
@@ -1199,10 +1011,10 @@ fn setup_scenario_select(
                             Text::new("⚙ Oyun Ayarları"),
                             TextFont {
                                 font: fonts.heading.clone(),
-                                font_size: FontSize::Px(14.5),
+                                font_size: FontSize::Px(theme.typography.label_md()),
                                 ..default()
                             },
-                            TextColor(Color::srgb(0.97, 0.89, 0.65)),
+                            TextColor(theme.colors.accent),
                             Pickable::IGNORE,
                         ));
                     });
@@ -1212,15 +1024,15 @@ fn setup_scenario_select(
                     .spawn((
                         Node {
                             width: Val::Px(350.0),
-                            padding: UiRect::all(Val::Px(20.0)),
+                            padding: UiRect::all(theme.spacing.val_lg()),
                             flex_direction: FlexDirection::Column,
-                            row_gap: Val::Px(12.0),
-                            border: UiRect::all(Val::Px(1.5)),
-                            border_radius: BorderRadius::all(Val::Px(16.0)),
+                            row_gap: theme.spacing.val_md(),
+                            border: UiRect::all(Val::Px(theme.borders.default)),
+                            border_radius: BorderRadius::all(theme.radius.val_lg()),
                             ..default()
                         },
-                        BackgroundColor(Color::srgba(0.05, 0.07, 0.13, 0.96)),
-                        BorderColor::all(Color::srgba(0.84, 0.71, 0.40, 0.85)),
+                        BackgroundColor(theme.colors.surface_raised),
+                        BorderColor::all(theme.colors.border_subtle),
                         Visibility::Hidden,
                         SettingsModalRoot,
                     ))
@@ -1229,10 +1041,10 @@ fn setup_scenario_select(
                             Text::new("OYUN AYARLARI"),
                             TextFont {
                                 font: fonts.heading.clone(),
-                                font_size: FontSize::Px(16.0),
+                                font_size: FontSize::Px(theme.typography.title_lg()),
                                 ..default()
                             },
-                            TextColor(Color::srgb(0.97, 0.89, 0.65)),
+                            TextColor(theme.colors.accent),
                         ));
 
                         // 1. Savaş Sisi (Fog of War)
@@ -1240,14 +1052,14 @@ fn setup_scenario_select(
                             .spawn((
                                 Node {
                                     width: Val::Percent(100.0),
-                                    padding: UiRect::axes(Val::Px(12.0), Val::Px(8.0)),
-                                    border: UiRect::all(Val::Px(1.0)),
-                                    border_radius: BorderRadius::all(Val::Px(8.0)),
+                                    padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_sm()),
+                                    border: UiRect::all(Val::Px(theme.borders.thin)),
+                                    border_radius: BorderRadius::all(theme.radius.val_sm()),
                                     justify_content: JustifyContent::SpaceBetween,
                                     ..default()
                                 },
-                                BackgroundColor(Color::srgba(0.12, 0.16, 0.24, 0.95)),
-                                BorderColor::all(Color::srgba(0.40, 0.46, 0.60, 0.60)),
+                                BackgroundColor(theme.colors.surface_panel()),
+                                BorderColor::all(theme.colors.border_subtle),
                             ))
                             .observe(
                                 |_: On<PointerClick>, mut settings: ResMut<GameSettings>| {
@@ -1259,10 +1071,10 @@ fn setup_scenario_select(
                                     Text::new("Savaş Sisi: Kapalı"),
                                     TextFont {
                                         font: fonts.medium.clone(),
-                                        font_size: FontSize::Px(13.5),
+                                        font_size: FontSize::Px(theme.typography.body_md()),
                                         ..default()
                                     },
-                                    TextColor(Color::srgb(0.92, 0.94, 0.98)),
+                                    TextColor(theme.colors.text_primary),
                                     SettingField::FogOfWar,
                                     Pickable::IGNORE,
                                 ));
@@ -1273,14 +1085,14 @@ fn setup_scenario_select(
                             .spawn((
                                 Node {
                                     width: Val::Percent(100.0),
-                                    padding: UiRect::axes(Val::Px(12.0), Val::Px(8.0)),
-                                    border: UiRect::all(Val::Px(1.0)),
-                                    border_radius: BorderRadius::all(Val::Px(8.0)),
+                                    padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_sm()),
+                                    border: UiRect::all(Val::Px(theme.borders.thin)),
+                                    border_radius: BorderRadius::all(theme.radius.val_sm()),
                                     justify_content: JustifyContent::SpaceBetween,
                                     ..default()
                                 },
-                                BackgroundColor(Color::srgba(0.12, 0.16, 0.24, 0.95)),
-                                BorderColor::all(Color::srgba(0.40, 0.46, 0.60, 0.60)),
+                                BackgroundColor(theme.colors.surface_panel()),
+                                BorderColor::all(theme.colors.border_subtle),
                             ))
                             .observe(
                                 |_: On<PointerClick>, mut settings: ResMut<GameSettings>| {
@@ -1297,10 +1109,10 @@ fn setup_scenario_select(
                                     Text::new("Zorluk: Normal"),
                                     TextFont {
                                         font: fonts.medium.clone(),
-                                        font_size: FontSize::Px(13.5),
+                                        font_size: FontSize::Px(theme.typography.body_md()),
                                         ..default()
                                     },
-                                    TextColor(Color::srgb(0.92, 0.94, 0.98)),
+                                    TextColor(theme.colors.text_primary),
                                     SettingField::Difficulty,
                                     Pickable::IGNORE,
                                 ));
@@ -1311,14 +1123,14 @@ fn setup_scenario_select(
                             .spawn((
                                 Node {
                                     width: Val::Percent(100.0),
-                                    padding: UiRect::axes(Val::Px(12.0), Val::Px(8.0)),
-                                    border: UiRect::all(Val::Px(1.0)),
-                                    border_radius: BorderRadius::all(Val::Px(8.0)),
+                                    padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_sm()),
+                                    border: UiRect::all(Val::Px(theme.borders.thin)),
+                                    border_radius: BorderRadius::all(theme.radius.val_sm()),
                                     justify_content: JustifyContent::SpaceBetween,
                                     ..default()
                                 },
-                                BackgroundColor(Color::srgba(0.12, 0.16, 0.24, 0.95)),
-                                BorderColor::all(Color::srgba(0.40, 0.46, 0.60, 0.60)),
+                                BackgroundColor(theme.colors.surface_panel()),
+                                BorderColor::all(theme.colors.border_subtle),
                             ))
                             .observe(
                                 |_: On<PointerClick>, mut settings: ResMut<GameSettings>| {
@@ -1334,10 +1146,10 @@ fn setup_scenario_select(
                                     Text::new("Yapay Zeka: Standart"),
                                     TextFont {
                                         font: fonts.medium.clone(),
-                                        font_size: FontSize::Px(13.5),
+                                        font_size: FontSize::Px(theme.typography.body_md()),
                                         ..default()
                                     },
-                                    TextColor(Color::srgb(0.92, 0.94, 0.98)),
+                                    TextColor(theme.colors.text_primary),
                                     SettingField::AiAggressiveness,
                                     Pickable::IGNORE,
                                 ));
@@ -1348,14 +1160,14 @@ fn setup_scenario_select(
                             .spawn((
                                 Node {
                                     width: Val::Percent(100.0),
-                                    padding: UiRect::axes(Val::Px(12.0), Val::Px(8.0)),
-                                    border: UiRect::all(Val::Px(1.0)),
-                                    border_radius: BorderRadius::all(Val::Px(8.0)),
+                                    padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_sm()),
+                                    border: UiRect::all(Val::Px(theme.borders.thin)),
+                                    border_radius: BorderRadius::all(theme.radius.val_sm()),
                                     justify_content: JustifyContent::SpaceBetween,
                                     ..default()
                                 },
-                                BackgroundColor(Color::srgba(0.12, 0.16, 0.24, 0.95)),
-                                BorderColor::all(Color::srgba(0.40, 0.46, 0.60, 0.60)),
+                                BackgroundColor(theme.colors.surface_panel()),
+                                BorderColor::all(theme.colors.border_subtle),
                             ))
                             .observe(
                                 |_: On<PointerClick>, mut settings: ResMut<GameSettings>| {
@@ -1367,10 +1179,10 @@ fn setup_scenario_select(
                                     Text::new("Demir Adam (Ironman): Kapalı"),
                                     TextFont {
                                         font: fonts.medium.clone(),
-                                        font_size: FontSize::Px(13.5),
+                                        font_size: FontSize::Px(theme.typography.body_md()),
                                         ..default()
                                     },
-                                    TextColor(Color::srgb(0.92, 0.94, 0.98)),
+                                    TextColor(theme.colors.text_primary),
                                     SettingField::Ironman,
                                     Pickable::IGNORE,
                                 ));
@@ -1381,14 +1193,14 @@ fn setup_scenario_select(
                             .spawn((
                                 Node {
                                     width: Val::Percent(100.0),
-                                    padding: UiRect::vertical(Val::Px(10.0)),
+                                    padding: UiRect::vertical(theme.spacing.val_sm()),
                                     justify_content: JustifyContent::Center,
                                     align_items: AlignItems::Center,
-                                    border_radius: BorderRadius::all(Val::Px(8.0)),
-                                    margin: UiRect::top(Val::Px(4.0)),
+                                    border_radius: BorderRadius::all(theme.radius.val_md()),
+                                    margin: UiRect::top(theme.spacing.val_xs()),
                                     ..default()
                                 },
-                                BackgroundColor(Color::srgba(0.18, 0.45, 0.24, 0.96)),
+                                BackgroundColor(theme.colors.accent),
                             ))
                             .observe(
                                 |_: On<PointerClick>, mut settings: ResMut<GameSettings>| {
@@ -1400,10 +1212,10 @@ fn setup_scenario_select(
                                     Text::new("✓ Ayarları Kaydet / Kapat"),
                                     TextFont {
                                         font: fonts.heading.clone(),
-                                        font_size: FontSize::Px(13.5),
+                                        font_size: FontSize::Px(theme.typography.label_md()),
                                         ..default()
                                     },
-                                    TextColor(Color::WHITE),
+                                    TextColor(theme.colors.text_primary),
                                     Pickable::IGNORE,
                                 ));
                             });
@@ -1416,71 +1228,42 @@ fn setup_scenario_select(
             root.spawn((
                 Node {
                     position_type: PositionType::Absolute,
-                    bottom: Val::Px(16.0),
-                    left: Val::Px(24.0),
-                    right: Val::Px(24.0),
-                    height: Val::Px(60.0),
+                    bottom: theme.spacing.val_md(),
+                    left: theme.spacing.val_lg(),
+                    right: theme.spacing.val_lg(),
+                    height: Val::Px(64.0),
                     flex_direction: FlexDirection::Row,
                     justify_content: JustifyContent::SpaceBetween,
                     align_items: AlignItems::Center,
-                    padding: UiRect::axes(Val::Px(16.0), Val::Px(8.0)),
+                    padding: UiRect::axes(theme.spacing.val_md(), theme.spacing.val_sm()),
                     border: UiRect::all(Val::Px(1.5)),
-                    border_radius: BorderRadius::all(Val::Px(16.0)),
+                    border_radius: BorderRadius::all(Val::Px(theme.radius.lg)),
                     ..default()
                 },
-                BackgroundColor(Color::srgba(0.05, 0.07, 0.12, 0.95)),
-                BorderColor::all(Color::srgba(0.76, 0.64, 0.36, 0.85)),
+                BackgroundColor(Color::srgb(0.06, 0.08, 0.11)),
+                BorderColor::all(Color::srgb(0.78, 0.62, 0.28)),
             ))
             .with_children(|bar| {
                 // Sol Alt: Geri Tuşu
-                bar.spawn((
-                    Node {
-                        padding: UiRect::axes(Val::Px(18.0), Val::Px(10.0)),
-                        border: UiRect::all(Val::Px(1.5)),
-                        border_radius: BorderRadius::all(Val::Px(10.0)),
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    BackgroundColor(Color::srgba(0.12, 0.16, 0.24, 0.95)),
-                    BorderColor::all(Color::srgba(0.60, 0.52, 0.36, 0.75)),
-                ))
-                .observe(
-                    |ev: On<PointerOver>, mut bg_q: Query<&mut BackgroundColor>| {
-                        if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                            bg.0 = Color::srgba(0.20, 0.26, 0.38, 0.99);
-                        }
-                    },
-                )
-                .observe(
-                    |ev: On<PointerOut>, mut bg_q: Query<&mut BackgroundColor>| {
-                        if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                            bg.0 = Color::srgba(0.12, 0.16, 0.24, 0.95);
-                        }
-                    },
-                )
-                .observe(
+                let mut back_btn = spawn_button(
+                    bar,
+                    &theme,
+                    &fonts,
+                    "← Senaryolara Dön",
+                    ButtonVariant::Secondary,
+                    ButtonSize::Small,
+                );
+                back_btn.observe(
                     |_: On<PointerClick>, mut next_state: ResMut<NextState<AppState>>| {
                         next_state.set(AppState::ScenarioCatalog);
                     },
-                )
-                .with_children(|b| {
-                    b.spawn((
-                        Text::new("← Senaryolara Dön"),
-                        TextFont {
-                            font: fonts.heading.clone(),
-                            font_size: FontSize::Px(14.0),
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.93, 0.90, 0.82)),
-                        Pickable::IGNORE,
-                    ));
-                });
+                );
 
                 // Orta: Önerilen / En Güçlü Ülkeler (Hızlı Seçim Çubuğu)
                 bar.spawn(Node {
                     flex_direction: FlexDirection::Row,
                     align_items: AlignItems::Center,
-                    column_gap: Val::Px(10.0),
+                    column_gap: theme.spacing.val_sm(),
                     ..default()
                 })
                 .with_children(|center| {
@@ -1488,10 +1271,10 @@ fn setup_scenario_select(
                         Text::new("Önerilen Güçler:"),
                         TextFont {
                             font: fonts.medium.clone(),
-                            font_size: FontSize::Px(13.0),
+                            font_size: FontSize::Px(theme.typography.label_md()),
                             ..default()
                         },
-                        TextColor(Color::srgb(0.70, 0.74, 0.82)),
+                        TextColor(theme.colors.text_secondary),
                     ));
 
                     // Süper güçler listesi: Türkiye, ABD, Rusya, Çin, Almanya, İngiltere, Fransa, Azerbaycan
@@ -1506,6 +1289,11 @@ fn setup_scenario_select(
                         ("aze", "Azerbaycan"),
                     ];
 
+                    let pill_bg = theme.colors.surface_panel();
+                    let pill_hover = theme.colors.surface_raised;
+                    let pill_border = theme.colors.border_subtle;
+                    let pill_border_hover = theme.colors.border_default;
+
                     for (tag, label) in quick_tags {
                         if let Some(civ) = scenario.civs.values().find(|c| c.tag == tag || c.tag.starts_with(tag)) {
                             let cid = civ.id;
@@ -1514,30 +1302,30 @@ fn setup_scenario_select(
                             center
                                 .spawn((
                                     Node {
-                                        padding: UiRect::axes(Val::Px(10.0), Val::Px(6.0)),
-                                        border: UiRect::all(Val::Px(1.0)),
-                                        border_radius: BorderRadius::all(Val::Px(8.0)),
+                                        padding: UiRect::axes(theme.spacing.val_sm(), theme.spacing.val_xs()),
+                                        border: UiRect::all(Val::Px(theme.borders.thin)),
+                                        border_radius: BorderRadius::all(theme.radius.val_sm()),
                                         flex_direction: FlexDirection::Row,
                                         align_items: AlignItems::Center,
-                                        column_gap: Val::Px(6.0),
+                                        column_gap: theme.spacing.val_xs(),
                                         ..default()
                                     },
-                                    BackgroundColor(Color::srgba(0.10, 0.13, 0.20, 0.90)),
-                                    BorderColor::all(Color::srgba(0.40, 0.45, 0.58, 0.60)),
+                                    BackgroundColor(pill_bg),
+                                    BorderColor::all(pill_border),
                                 ))
                                 .observe(
-                                    |ev: On<PointerOver>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                                    move |ev: On<PointerOver>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
                                         if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
-                                            bg.0 = Color::srgba(0.20, 0.25, 0.38, 0.98);
-                                            *border = BorderColor::all(Color::srgb(0.90, 0.82, 0.55));
+                                            bg.0 = pill_hover;
+                                            *border = BorderColor::all(pill_border_hover);
                                         }
                                     },
                                 )
                                 .observe(
-                                    |ev: On<PointerOut>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
+                                    move |ev: On<PointerOut>, mut q: Query<(&mut BackgroundColor, &mut BorderColor)>| {
                                         if let Ok((mut bg, mut border)) = q.get_mut(ev.entity) {
-                                            bg.0 = Color::srgba(0.10, 0.13, 0.20, 0.90);
-                                            *border = BorderColor::all(Color::srgba(0.40, 0.45, 0.58, 0.60));
+                                            bg.0 = pill_bg;
+                                            *border = BorderColor::all(pill_border);
                                         }
                                     },
                                 )
@@ -1565,7 +1353,7 @@ fn setup_scenario_select(
                                         Node {
                                             width: Val::Px(16.0),
                                             height: Val::Px(11.0),
-                                            border_radius: BorderRadius::all(Val::Px(2.0)),
+                                            border_radius: BorderRadius::all(theme.radius.val_xs()),
                                             ..default()
                                         },
                                         Pickable::IGNORE,
@@ -1574,10 +1362,10 @@ fn setup_scenario_select(
                                         Text::new(label),
                                         TextFont {
                                             font: fonts.heading.clone(),
-                                            font_size: FontSize::Px(12.0),
+                                            font_size: FontSize::Px(theme.typography.label_sm()),
                                             ..default()
                                         },
-                                        TextColor(Color::srgb(0.93, 0.95, 0.98)),
+                                        TextColor(theme.colors.text_primary),
                                         Pickable::IGNORE,
                                     ));
                                 });
@@ -1585,33 +1373,16 @@ fn setup_scenario_select(
                     }
                 });
 
-                // Sağ Alt: OYNA Butonu
-                bar.spawn((
-                    Node {
-                        padding: UiRect::axes(Val::Px(28.0), Val::Px(12.0)),
-                        border: UiRect::all(Val::Px(1.5)),
-                        border_radius: BorderRadius::all(Val::Px(12.0)),
-                        align_items: AlignItems::Center,
-                        ..default()
-                    },
-                    BackgroundColor(Color::srgba(0.16, 0.48, 0.24, 0.96)),
-                    BorderColor::all(Color::srgba(0.55, 0.90, 0.60, 0.95)),
-                ))
-                .observe(
-                    |ev: On<PointerOver>, mut bg_q: Query<&mut BackgroundColor>| {
-                        if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                            bg.0 = Color::srgba(0.22, 0.60, 0.30, 0.99);
-                        }
-                    },
-                )
-                .observe(
-                    |ev: On<PointerOut>, mut bg_q: Query<&mut BackgroundColor>| {
-                        if let Ok(mut bg) = bg_q.get_mut(ev.entity) {
-                            bg.0 = Color::srgba(0.16, 0.48, 0.24, 0.96);
-                        }
-                    },
-                )
-                .observe(
+                // Sağ Alt: OYNA Butonu (Solid Primary Button - Dark text on glowing gold)
+                let mut oyna_btn = spawn_button(
+                    bar,
+                    &theme,
+                    &fonts,
+                    "OYNA  ▶",
+                    ButtonVariant::Primary,
+                    ButtonSize::Large,
+                );
+                oyna_btn.observe(
                     |_: On<PointerClick>,
                      session: Res<GameSession>,
                      scenario: Res<ActiveScenario>,
@@ -1626,19 +1397,7 @@ fn setup_scenario_select(
                         }
                         next_state.set(AppState::InGame);
                     },
-                )
-                .with_children(|btn| {
-                    btn.spawn((
-                        Text::new("OYNA  ▶"),
-                        TextFont {
-                            font: fonts.heading.clone(),
-                            font_size: FontSize::Px(17.0),
-                            ..default()
-                        },
-                        TextColor(Color::srgb(0.97, 1.0, 0.97)),
-                        Pickable::IGNORE,
-                    ));
-                });
+                );
             });
         });
 }
