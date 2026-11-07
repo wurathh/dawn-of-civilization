@@ -1,6 +1,24 @@
+#![allow(deprecated)]
+
 use crate::state::UiFonts;
-use crate::ui::theme::Theme;
+use crate::ui::theme::{Theme, Ui};
 use bevy::prelude::*;
+use bevy::ui::FocusPolicy;
+
+/// `bevy_menu_example` içerisindeki doğrudan metin oluşturucu yardımcı fonksiyon.
+pub fn text(p: &mut ChildSpawnerCommands, ui: &Ui, s: &str, size: f32, color: Color) {
+    p.spawn((
+        Text::new(s),
+        TextFont {
+            font: ui.font.clone().into(),
+            font_size: FontSize::Px(size),
+            ..default()
+        },
+        TextColor(color),
+        FocusPolicy::Pass,
+        Pickable::IGNORE,
+    ));
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TextVariant {
@@ -65,26 +83,26 @@ pub fn text_bundle(
     )
 }
 
-pub fn display(theme: &Theme, fonts: &UiFonts, text: impl Into<String>) -> (Text, TextFont, TextColor) {
-    text_bundle(theme, fonts, text, TextVariant::Display, TextTone::Primary)
+pub fn display(theme: &Theme, fonts: &UiFonts, text_str: impl Into<String>) -> (Text, TextFont, TextColor) {
+    text_bundle(theme, fonts, text_str, TextVariant::Display, TextTone::Accent)
 }
 
-pub fn headline(theme: &Theme, fonts: &UiFonts, text: impl Into<String>) -> (Text, TextFont, TextColor) {
-    text_bundle(theme, fonts, text, TextVariant::Headline, TextTone::Primary)
+pub fn headline(theme: &Theme, fonts: &UiFonts, text_str: impl Into<String>) -> (Text, TextFont, TextColor) {
+    text_bundle(theme, fonts, text_str, TextVariant::Headline, TextTone::Accent)
 }
 
-pub fn title(theme: &Theme, fonts: &UiFonts, text: impl Into<String>) -> (Text, TextFont, TextColor) {
-    text_bundle(theme, fonts, text, TextVariant::Title, TextTone::Primary)
+pub fn title(theme: &Theme, fonts: &UiFonts, text_str: impl Into<String>) -> (Text, TextFont, TextColor) {
+    text_bundle(theme, fonts, text_str, TextVariant::Title, TextTone::Primary)
 }
 
-pub fn label(theme: &Theme, fonts: &UiFonts, text: impl Into<String>) -> (Text, TextFont, TextColor) {
-    text_bundle(theme, fonts, text, TextVariant::Label, TextTone::Primary)
+pub fn label(theme: &Theme, fonts: &UiFonts, text_str: impl Into<String>) -> (Text, TextFont, TextColor) {
+    text_bundle(theme, fonts, text_str, TextVariant::Label, TextTone::Primary)
 }
 
-pub fn body(theme: &Theme, fonts: &UiFonts, text: impl Into<String>) -> (Text, TextFont, TextColor) {
-    text_bundle(theme, fonts, text, TextVariant::Body, TextTone::Secondary)
+pub fn body(theme: &Theme, fonts: &UiFonts, text_str: impl Into<String>) -> (Text, TextFont, TextColor) {
+    text_bundle(theme, fonts, text_str, TextVariant::Body, TextTone::Secondary)
 }
 
-pub fn caption(theme: &Theme, fonts: &UiFonts, text: impl Into<String>) -> (Text, TextFont, TextColor) {
-    text_bundle(theme, fonts, text, TextVariant::Caption, TextTone::Secondary)
+pub fn caption(theme: &Theme, fonts: &UiFonts, text_str: impl Into<String>) -> (Text, TextFont, TextColor) {
+    text_bundle(theme, fonts, text_str, TextVariant::Caption, TextTone::Secondary)
 }

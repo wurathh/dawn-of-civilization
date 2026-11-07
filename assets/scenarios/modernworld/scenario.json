@@ -1,7 +1,7 @@
 {
   "id": "modernworld",
-  "name": "Modern D\u00fcnya (2026)",
-  "description": "210 \u00fclke ve 6.189 \u015fehir ile g\u00fcn\u00fcm\u00fcz jeopolitik d\u00fcnya d\u00fczeni.",
+  "name": "Modern Dünya",
+  "description": "210 ülke ve 6.189 şehir ile günümüz jeopolitik dünya düzeni.",
   "year": 2026,
   "month": 10,
   "day": 29,
@@ -9,7 +9,7 @@
     {
       "id": 1,
       "tag": "tur",
-      "name": "T\u00fcrkiye",
+      "name": "Türkiye",
       "color": [
         227,
         10,
@@ -25,7 +25,6 @@
         586,
         588,
         589,
-        590,
         591,
         592,
         593,
@@ -122,7 +121,10 @@
         699,
         700,
         701
-      ]
+      ],
+      "leader": "Recep Tayyip Erdoğan",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 2,
@@ -162,7 +164,10 @@
         578,
         579,
         580
-      ]
+      ],
+      "leader": "Katerina Sakelaropulu",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 3,
@@ -195,7 +200,10 @@
         557,
         558,
         559
-      ]
+      ],
+      "leader": "Rumen Radev",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 4,
@@ -217,12 +225,15 @@
         541,
         543,
         544
-      ]
+      ],
+      "leader": "Bajram Begaj",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 5,
       "tag": "ser",
-      "name": "S\u0131rbistan",
+      "name": "Sırbistan",
       "color": [
         149,
         37,
@@ -249,7 +260,10 @@
         524,
         527,
         528
-      ]
+      ],
+      "leader": "Aleksandar Vučić",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 6,
@@ -294,7 +308,10 @@
         477,
         549,
         550
-      ]
+      ],
+      "leader": "Klaus Iohannis",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 7,
@@ -313,7 +330,10 @@
         535,
         536,
         537
-      ]
+      ],
+      "leader": "Gordana Siljanovska-Davkova",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 8,
@@ -331,7 +351,10 @@
       "provinces": [
         525,
         526
-      ]
+      ],
+      "leader": "Vjosa Osmani",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 9,
@@ -357,12 +380,15 @@
         512,
         513,
         514
-      ]
+      ],
+      "leader": "Denis Bećirović",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 10,
       "tag": "mot",
-      "name": "Karada\u011f",
+      "name": "Karadağ",
       "color": [
         209,
         151,
@@ -375,12 +401,15 @@
       "provinces": [
         515,
         516
-      ]
+      ],
+      "leader": "Jakov Milatović",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 11,
       "tag": "cro",
-      "name": "H\u0131rvatistan",
+      "name": "Hırvatistan",
       "color": [
         217,
         39,
@@ -404,7 +433,10 @@
         581,
         582,
         583
-      ]
+      ],
+      "leader": "Zoran Milanović",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 12,
@@ -434,7 +466,10 @@
         446,
         447,
         448
-      ]
+      ],
+      "leader": "Tamás Sulyok",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 13,
@@ -454,12 +489,15 @@
         480,
         481,
         482
-      ]
+      ],
+      "leader": "Nataša Pirc Musar",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 14,
       "tag": "cyn",
-      "name": "Kuzey K\u0131br\u0131s T\u00fcrk Cumhuriyeti",
+      "name": "Kuzey Kıbrıs Türk Cumhuriyeti",
       "color": [
         255,
         255,
@@ -472,25 +510,31 @@
       "provinces": [
         1755,
         1756
-      ]
+      ],
+      "leader": "Ersin Tatar",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 15,
       "tag": "cpr",
-      "name": "K\u0131br\u0131s Cumhuriyeti",
+      "name": "Kıbrıs Cumhuriyeti",
       "color": [
         212,
         116,
         0
       ],
       "capital_province_id": 1759,
-      "capital_name": "\u00c1gios T\u00fdchon",
+      "capital_name": "Ágios Týchon",
       "population": 672491,
       "economy": 3024,
       "provinces": [
         1758,
         1759
-      ]
+      ],
+      "leader": "Nikos Hristodulidis",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 16,
@@ -527,7 +571,10 @@
         738,
         739,
         740
-      ]
+      ],
+      "leader": "Beşar Esad",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 17,
@@ -573,7 +620,10 @@
         788,
         789,
         790
-      ]
+      ],
+      "leader": "Abdüllatif Reşid",
+      "government_id": 10,
+      "religion_id": 21
     },
     {
       "id": 18,
@@ -591,12 +641,15 @@
       "provinces": [
         777,
         778
-      ]
+      ],
+      "leader": "Meşal el-Ahmed el-Cabir es-Sabah",
+      "government_id": 3,
+      "religion_id": 24
     },
     {
       "id": 19,
       "tag": "leb",
-      "name": "L\u00fcbnan",
+      "name": "Lübnan",
       "color": [
         120,
         208,
@@ -610,7 +663,10 @@
         741,
         742,
         743
-      ]
+      ],
+      "leader": "Necib Mikati",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 20,
@@ -627,12 +683,15 @@
       "economy": 1323,
       "provinces": [
         747
-      ]
+      ],
+      "leader": "Mahmud Abbas",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 21,
       "tag": "isr",
-      "name": "\u0130srail",
+      "name": "İsrail",
       "color": [
         0,
         26,
@@ -649,12 +708,15 @@
         748,
         749,
         6680
-      ]
+      ],
+      "leader": "Isaac Herzog",
+      "government_id": 10,
+      "religion_id": 14
     },
     {
       "id": 22,
       "tag": "jor",
-      "name": "\u00dcrd\u00fcn",
+      "name": "Ürdün",
       "color": [
         140,
         104,
@@ -674,7 +736,10 @@
         768,
         769,
         770
-      ]
+      ],
+      "leader": "II. Abdullah",
+      "government_id": 3,
+      "religion_id": 24
     },
     {
       "id": 23,
@@ -750,7 +815,10 @@
         909,
         912,
         913
-      ]
+      ],
+      "leader": "Selman bin Abdülaziz",
+      "government_id": 9,
+      "religion_id": 24
     },
     {
       "id": 24,
@@ -767,7 +835,10 @@
       "economy": 2231,
       "provinces": [
         968
-      ]
+      ],
+      "leader": "Hamed bin İsa el-Halife",
+      "government_id": 3,
+      "religion_id": 24
     },
     {
       "id": 25,
@@ -785,12 +856,15 @@
       "provinces": [
         969,
         970
-      ]
+      ],
+      "leader": "Temim bin Hamed es-Sani",
+      "government_id": 9,
+      "religion_id": 24
     },
     {
       "id": 26,
       "tag": "uae_m",
-      "name": "Birle\u015fik Arap Emirlikleri",
+      "name": "Birleşik Arap Emirlikleri",
       "color": [
         68,
         112,
@@ -808,7 +882,10 @@
         965,
         966,
         967
-      ]
+      ],
+      "leader": "Muhammed bin Zayid en-Nehyan",
+      "government_id": 9,
+      "religion_id": 24
     },
     {
       "id": 27,
@@ -844,7 +921,10 @@
         960,
         961,
         962
-      ]
+      ],
+      "leader": "Heysem bin Tarık",
+      "government_id": 9,
+      "religion_id": 11
     },
     {
       "id": 28,
@@ -890,12 +970,15 @@
         939,
         940,
         3505
-      ]
+      ],
+      "leader": "Reşad el-Alimi",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 29,
       "tag": "egy",
-      "name": "M\u0131s\u0131r",
+      "name": "Mısır",
       "color": [
         214,
         185,
@@ -967,7 +1050,10 @@
         903,
         904,
         905
-      ]
+      ],
+      "leader": "Abdülfettah es-Sisi",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 30,
@@ -1023,7 +1109,10 @@
         1008,
         1094,
         1095
-      ]
+      ],
+      "leader": "Muhammed el-Menfi",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 31,
@@ -1055,7 +1144,10 @@
         1105,
         1106,
         1107
-      ]
+      ],
+      "leader": "Kays Said",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 32,
@@ -1131,7 +1223,10 @@
         1131,
         1132,
         1133
-      ]
+      ],
+      "leader": "Abdülmecid Tebbun",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 33,
@@ -1191,7 +1286,10 @@
         1089,
         1110,
         1111
-      ]
+      ],
+      "leader": "VI. Muhammed",
+      "government_id": 3,
+      "religion_id": 24
     },
     {
       "id": 34,
@@ -1223,7 +1321,10 @@
         685,
         702,
         703
-      ]
+      ],
+      "leader": "İlham Aliyev",
+      "government_id": 10,
+      "religion_id": 21
     },
     {
       "id": 35,
@@ -1243,12 +1344,15 @@
         705,
         706,
         707
-      ]
+      ],
+      "leader": "Vahagn Haçaturyan",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 36,
       "tag": "geo",
-      "name": "G\u00fcrcistan",
+      "name": "Gürcistan",
       "color": [
         132,
         63,
@@ -1272,12 +1376,15 @@
         717,
         718,
         719
-      ]
+      ],
+      "leader": "Salome Zurabişvili",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 38,
       "tag": "ita",
-      "name": "\u0130talya",
+      "name": "İtalya",
       "color": [
         0,
         146,
@@ -1367,7 +1474,10 @@
         1752,
         1753,
         1754
-      ]
+      ],
+      "leader": "Sergio Mattarella",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 40,
@@ -1384,12 +1494,15 @@
       "economy": 19336,
       "provinces": [
         1760
-      ]
+      ],
+      "leader": "Myriam Spiteri Debono",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 41,
       "tag": "spa_m",
-      "name": "\u0130spanya",
+      "name": "İspanya",
       "color": [
         255,
         196,
@@ -1488,7 +1601,10 @@
         5702,
         5703,
         5704
-      ]
+      ],
+      "leader": "VI. Felipe",
+      "government_id": 3,
+      "religion_id": 4
     },
     {
       "id": 42,
@@ -1524,7 +1640,10 @@
         5698,
         5699,
         5700
-      ]
+      ],
+      "leader": "Marcelo Rebelo de Sousa",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 45,
@@ -1647,28 +1766,8 @@
         281,
         1560,
         1561,
-        3995,
         4185,
         4186,
-        4793,
-        5334,
-        5335,
-        5372,
-        5379,
-        5405,
-        5716,
-        5792,
-        5799,
-        5902,
-        5903,
-        5972,
-        6005,
-        6040,
-        6117,
-        6129,
-        6138,
-        6141,
-        6145,
         6168,
         6169,
         6170,
@@ -1683,12 +1782,15 @@
         6180,
         6182,
         6673
-      ]
+      ],
+      "leader": "Emmanuel Macron",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 46,
       "tag": "swi",
-      "name": "\u0130svi\u00e7re",
+      "name": "İsviçre",
       "color": [
         178,
         86,
@@ -1714,12 +1816,15 @@
         293,
         294,
         295
-      ]
+      ],
+      "leader": "Viola Amherd",
+      "government_id": 5,
+      "religion_id": 20
     },
     {
       "id": 47,
       "tag": "bel_m",
-      "name": "Bel\u00e7ika",
+      "name": "Belçika",
       "color": [
         250,
         224,
@@ -1747,7 +1852,10 @@
         379,
         381,
         382
-      ]
+      ],
+      "leader": "Philippe",
+      "government_id": 3,
+      "religion_id": 4
     },
     {
       "id": 48,
@@ -1785,12 +1893,15 @@
         1253,
         1254,
         1255
-      ]
+      ],
+      "leader": "Willem-Alexander",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 49,
       "tag": "lux_rel3_n",
-      "name": "L\u00fcksemburg",
+      "name": "Lüksemburg",
       "color": [
         191,
         27,
@@ -1802,7 +1913,10 @@
       "economy": 3453,
       "provinces": [
         272
-      ]
+      ],
+      "leader": "Henri",
+      "government_id": 3,
+      "religion_id": 4
     },
     {
       "id": 50,
@@ -1953,7 +2067,10 @@
         3636,
         3637,
         3638
-      ]
+      ],
+      "leader": "Frank-Walter Steinmeier",
+      "government_id": 5,
+      "religion_id": 20
     },
     {
       "id": 51,
@@ -2047,12 +2164,15 @@
         1500,
         1501,
         1502
-      ]
+      ],
+      "leader": "Andrzej Duda",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 52,
       "tag": "cze_rel3",
-      "name": "\u00c7ek Cumhuriyeti",
+      "name": "Çek Cumhuriyeti",
       "color": [
         51,
         248,
@@ -2079,7 +2199,10 @@
         420,
         421,
         422
-      ]
+      ],
+      "leader": "Petr Pavel",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 53,
@@ -2139,7 +2262,10 @@
         1341,
         1344,
         1347
-      ]
+      ],
+      "leader": "Volodimir Zelenski",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 54,
@@ -2187,7 +2313,10 @@
         1596,
         1604,
         1605
-      ]
+      ],
+      "leader": "Aleksandr Lukaşenko",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 55,
@@ -2212,7 +2341,10 @@
         1589,
         1590,
         1591
-      ]
+      ],
+      "leader": "Alar Karis",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 56,
@@ -2240,7 +2372,10 @@
         1576,
         1577,
         1578
-      ]
+      ],
+      "leader": "Edgars Rinkēvičs",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 57,
@@ -2274,7 +2409,10 @@
         404,
         405,
         406
-      ]
+      ],
+      "leader": "Alexander Van der Bellen",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 58,
@@ -2300,12 +2438,15 @@
         430,
         431,
         432
-      ]
+      ],
+      "leader": "Peter Pellegrini",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 59,
       "tag": "uni_m",
-      "name": "Birle\u015fik Krall\u0131k",
+      "name": "Birleşik Krallık",
       "color": [
         192,
         20,
@@ -2404,7 +2545,10 @@
         6083,
         6177,
         6181
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 60,
@@ -2799,7 +2943,10 @@
         5616,
         5617,
         5618
-      ]
+      ],
+      "leader": "Vladimir Putin",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 62,
@@ -2831,7 +2978,10 @@
         1545,
         1551,
         1552
-      ]
+      ],
+      "leader": "Gitanas Nausėda",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 65,
@@ -2851,12 +3001,15 @@
         1289,
         1290,
         1291
-      ]
+      ],
+      "leader": "Maia Sandu",
+      "government_id": 10,
+      "religion_id": 18
     },
     {
       "id": 66,
       "tag": "ire_rel3_r",
-      "name": "\u0130rlanda",
+      "name": "İrlanda",
       "color": [
         31,
         148,
@@ -2889,7 +3042,10 @@
         5638,
         5643,
         5644
-      ]
+      ],
+      "leader": "Michael D. Higgins",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 67,
@@ -2929,12 +3085,15 @@
         3702,
         5577,
         3644
-      ]
+      ],
+      "leader": "X. Frederik",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 68,
       "tag": "nor_rel3_n",
-      "name": "Norve\u00e7",
+      "name": "Norveç",
       "color": [
         239,
         43,
@@ -2972,12 +3131,15 @@
         3799,
         3801,
         5576
-      ]
+      ],
+      "leader": "V. Harald",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 69,
       "tag": "swe_rel3_n",
-      "name": "\u0130sve\u00e7",
+      "name": "İsveç",
       "color": [
         19,
         53,
@@ -3035,7 +3197,10 @@
         3789,
         3790,
         3791
-      ]
+      ],
+      "leader": "XVI. Carl Gustaf",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 70,
@@ -3080,7 +3245,10 @@
         5597,
         5598,
         6581
-      ]
+      ],
+      "leader": "Alexander Stubb",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 71,
@@ -3161,12 +3329,15 @@
         2696,
         2697,
         2698
-      ]
+      ],
+      "leader": "Kasım Cömert Tokayev",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 72,
       "tag": "trk",
-      "name": "T\u00fcrkmenistan",
+      "name": "Türkmenistan",
       "color": [
         40,
         174,
@@ -3195,7 +3366,10 @@
         2224,
         2225,
         2226
-      ]
+      ],
+      "leader": "Serdar Berdimuhamedov",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 73,
@@ -3217,12 +3391,15 @@
         2240,
         2251,
         2252
-      ]
+      ],
+      "leader": "İmamali Rahman",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 74,
       "tag": "kyr",
-      "name": "K\u0131rg\u0131zistan",
+      "name": "Kırgızistan",
       "color": [
         249,
         186,
@@ -3242,12 +3419,15 @@
         2541,
         2542,
         2543
-      ]
+      ],
+      "leader": "Sadır Caparov",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 75,
       "tag": "uzb",
-      "name": "\u00d6zbekistan",
+      "name": "Özbekistan",
       "color": [
         0,
         153,
@@ -3283,12 +3463,15 @@
         2532,
         2538,
         2539
-      ]
+      ],
+      "leader": "Şevket Mirziyoyev",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 76,
       "tag": "mon",
-      "name": "Mo\u011folistan",
+      "name": "Moğolistan",
       "color": [
         103,
         239,
@@ -3327,12 +3510,15 @@
         2860,
         2861,
         2862
-      ]
+      ],
+      "leader": "Ukhnaagiin Khürelsükh",
+      "government_id": 10,
+      "religion_id": 29
     },
     {
       "id": 77,
       "tag": "ira_rel6_a",
-      "name": "\u0130ran",
+      "name": "İran",
       "color": [
         51,
         195,
@@ -3461,12 +3647,15 @@
         1249,
         1250,
         1251
-      ]
+      ],
+      "leader": "Mesud Pezeşkiyan",
+      "government_id": 11,
+      "religion_id": 21
     },
     {
       "id": 78,
       "tag": "afg_m",
-      "name": "Afganistan Emirli\u011fi",
+      "name": "Afganistan Emirliği",
       "color": [
         98,
         98,
@@ -3509,12 +3698,15 @@
         1835,
         2216,
         2217
-      ]
+      ],
+      "leader": "Hibatullah Ahundzade",
+      "government_id": 11,
+      "religion_id": 24
     },
     {
       "id": 79,
       "tag": "chi_c",
-      "name": "\u00c7in",
+      "name": "Çin",
       "color": [
         222,
         41,
@@ -3902,7 +4094,10 @@
         4062,
         4063,
         4064
-      ]
+      ],
+      "leader": "Xi Jinping",
+      "government_id": 2,
+      "religion_id": 6
     },
     {
       "id": 80,
@@ -3919,7 +4114,10 @@
       "economy": 1069,
       "provinces": [
         2459
-      ]
+      ],
+      "leader": "John Lee",
+      "government_id": 1,
+      "religion_id": 3
     },
     {
       "id": 81,
@@ -3936,7 +4134,10 @@
       "economy": 441,
       "provinces": [
         2458
-      ]
+      ],
+      "leader": "Ho Iat Seng",
+      "government_id": 1,
+      "religion_id": 4
     },
     {
       "id": 82,
@@ -3958,7 +4159,10 @@
         4038,
         4039,
         4040
-      ]
+      ],
+      "leader": "Lai Ching-te",
+      "government_id": 5,
+      "religion_id": 25
     },
     {
       "id": 83,
@@ -3988,12 +4192,15 @@
         3369,
         3390,
         3391
-      ]
+      ],
+      "leader": "Kim Jong-un",
+      "government_id": 2,
+      "religion_id": 2
     },
     {
       "id": 84,
       "tag": "sok",
-      "name": "G\u00fcney Kore",
+      "name": "Güney Kore",
       "color": [
         0,
         54,
@@ -4024,7 +4231,10 @@
         3387,
         3388,
         3389
-      ]
+      ],
+      "leader": "Yoon Suk-yeol",
+      "government_id": 10,
+      "religion_id": 3
     },
     {
       "id": 85,
@@ -4137,8 +4347,13 @@
         5828,
         6091,
         6092,
-        6093
-      ]
+        6093,
+        5792,
+        5799
+      ],
+      "leader": "Naruhito",
+      "government_id": 3,
+      "religion_id": 22
     },
     {
       "id": 86,
@@ -4208,8 +4423,13 @@
         6029,
         6030,
         6031,
-        6032
-      ]
+        6032,
+        5902,
+        5903
+      ],
+      "leader": "Bongbong Marcos",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 87,
@@ -4257,12 +4477,15 @@
         2446,
         2447,
         2448
-      ]
+      ],
+      "leader": "To Lam",
+      "government_id": 2,
+      "religion_id": 15
     },
     {
       "id": 88,
       "tag": "cab_rel16_n",
-      "name": "Kambo\u00e7ya",
+      "name": "Kamboçya",
       "color": [
         39,
         48,
@@ -4285,7 +4508,10 @@
         2424,
         2425,
         2426
-      ]
+      ],
+      "leader": "Norodom Sihamoni",
+      "government_id": 3,
+      "religion_id": 27
     },
     {
       "id": 89,
@@ -4315,7 +4541,10 @@
         2312,
         2317,
         2318
-      ]
+      ],
+      "leader": "Thongloun Sisoulith",
+      "government_id": 2,
+      "religion_id": 27
     },
     {
       "id": 90,
@@ -4371,7 +4600,10 @@
         2401,
         2419,
         2420
-      ]
+      ],
+      "leader": "X. Rama (Maha Vajiralongkorn)",
+      "government_id": 3,
+      "religion_id": 27
     },
     {
       "id": 91,
@@ -4455,7 +4687,10 @@
         2385,
         2387,
         2388
-      ]
+      ],
+      "leader": "Min Aung Hlaing",
+      "government_id": 10,
+      "religion_id": 27
     },
     {
       "id": 92,
@@ -4744,7 +4979,10 @@
         2257,
         5715,
         5717
-      ]
+      ],
+      "leader": "Draupadi Murmu",
+      "government_id": 5,
+      "religion_id": 9
     },
     {
       "id": 93,
@@ -4819,7 +5057,10 @@
         1852,
         2254,
         2255
-      ]
+      ],
+      "leader": "Asif Ali Zardari",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 94,
@@ -4851,7 +5092,10 @@
         2102,
         2103,
         2104
-      ]
+      ],
+      "leader": "Ram Chandra Poudel",
+      "government_id": 10,
+      "religion_id": 9
     },
     {
       "id": 95,
@@ -4870,15 +5114,16 @@
         2132,
         2133,
         2134,
-        2135,
-        6074,
-        6088
-      ]
+        2135
+      ],
+      "leader": "Jigme Khesar Namgyel Wangchuck",
+      "government_id": 3,
+      "religion_id": 29
     },
     {
       "id": 96,
       "tag": "ban",
-      "name": "Banglade\u015f",
+      "name": "Bangladeş",
       "color": [
         0,
         106,
@@ -4906,7 +5151,10 @@
         2123,
         2126,
         2127
-      ]
+      ],
+      "leader": "Muhammed Şehabeddin",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 97,
@@ -4934,7 +5182,10 @@
         4026,
         4027,
         4028
-      ]
+      ],
+      "leader": "Anura Kumara Dissanayake",
+      "government_id": 10,
+      "religion_id": 27
     },
     {
       "id": 98,
@@ -4956,7 +5207,10 @@
         5710,
         5711,
         5712
-      ]
+      ],
+      "leader": "Muhammed Muizzu",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 99,
@@ -4998,7 +5252,10 @@
         5999,
         6000,
         6001
-      ]
+      ],
+      "leader": "İbrahim İskender",
+      "government_id": 3,
+      "religion_id": 24
     },
     {
       "id": 100,
@@ -5016,7 +5273,10 @@
       "provinces": [
         2417,
         5683
-      ]
+      ],
+      "leader": "Tharman Shanmugaratnam",
+      "government_id": 1,
+      "religion_id": 3
     },
     {
       "id": 101,
@@ -5034,7 +5294,10 @@
       "provinces": [
         5997,
         5998
-      ]
+      ],
+      "leader": "Hassanal Bolkiah",
+      "government_id": 9,
+      "religion_id": 24
     },
     {
       "id": 102,
@@ -5193,8 +5456,14 @@
         6099,
         6100,
         6101,
-        6103
-      ]
+        6103,
+        5972,
+        6005,
+        5716
+      ],
+      "leader": "Prabowo Subianto",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 103,
@@ -5226,12 +5495,15 @@
         6105,
         6106,
         6107
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 104,
       "tag": "sol_m",
-      "name": "Solomon Adalar\u0131",
+      "name": "Solomon Adaları",
       "color": [
         0,
         155,
@@ -5248,7 +5520,10 @@
         6111,
         6112,
         6113
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 105,
@@ -5339,8 +5614,14 @@
         5951,
         5952,
         5953,
-        5954
-      ]
+        5954,
+        6040,
+        6047,
+        6074
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 106,
@@ -5374,12 +5655,15 @@
         6155,
         6157,
         6158
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 107,
       "tag": "ssz",
-      "name": "Sey\u015feller",
+      "name": "Seyşeller",
       "color": [
         35,
         83,
@@ -5391,7 +5675,10 @@
       "economy": 10412,
       "provinces": [
         4016
-      ]
+      ],
+      "leader": "Wavel Ramkalawan",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 108,
@@ -5409,7 +5696,10 @@
       "provinces": [
         3907,
         3908
-      ]
+      ],
+      "leader": "Azali Assoumani",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 109,
@@ -5427,7 +5717,10 @@
       "provinces": [
         4014,
         4015
-      ]
+      ],
+      "leader": "Prithvirajsing Roopun",
+      "government_id": 10,
+      "religion_id": 9
     },
     {
       "id": 110,
@@ -5472,20 +5765,24 @@
         4010,
         4011,
         4012,
-        4013
-      ]
+        4013,
+        3995
+      ],
+      "leader": "Andry Rajoelina",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 111,
       "tag": "ice",
-      "name": "\u0130zlanda",
+      "name": "İzlanda",
       "color": [
         189,
         204,
         228
       ],
       "capital_province_id": 5573,
-      "capital_name": "Sau\u00f0\u00e1rkr\u00f3kur",
+      "capital_name": "Sauðárkrókur",
       "population": 387559,
       "economy": 14502,
       "provinces": [
@@ -5493,12 +5790,15 @@
         5573,
         5574,
         5575
-      ]
+      ],
+      "leader": "Halla Tómasdóttir",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 112,
       "tag": "ggg",
-      "name": "Gr\u00f6nland",
+      "name": "Grönland",
       "color": [
         221,
         221,
@@ -5520,12 +5820,15 @@
         5569,
         5570,
         5571
-      ]
+      ],
+      "leader": "X. Frederik",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 113,
       "tag": "cap",
-      "name": "Ye\u015fil Burun Adalar\u0131",
+      "name": "Yeşil Burun Adaları",
       "color": [
         0,
         56,
@@ -5538,7 +5841,10 @@
       "provinces": [
         4029,
         4030
-      ]
+      ],
+      "leader": "José Maria Neves",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 114,
@@ -5555,7 +5861,10 @@
       "economy": 3718,
       "provinces": [
         3601
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 115,
@@ -5615,7 +5924,10 @@
         3409,
         3410,
         3411
-      ]
+      ],
+      "leader": "Abdülfettah el-Burhan",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 116,
@@ -5639,7 +5951,10 @@
         3178,
         3183,
         3184
-      ]
+      ],
+      "leader": "Isaias Afwerki",
+      "government_id": 10,
+      "religion_id": 5
     },
     {
       "id": 117,
@@ -5657,7 +5972,10 @@
       "provinces": [
         3449,
         3450
-      ]
+      ],
+      "leader": "İsmail Ömer Guelleh",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 118,
@@ -5685,7 +6003,10 @@
         3492,
         3501,
         3502
-      ]
+      ],
+      "leader": "Musa Bihi Abdi",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 119,
@@ -5733,7 +6054,10 @@
         3533,
         3534,
         3535
-      ]
+      ],
+      "leader": "Hasan Şeyh Mahmud",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 120,
@@ -5810,12 +6134,15 @@
         3498,
         3499,
         3500
-      ]
+      ],
+      "leader": "Taye Atske Selassie",
+      "government_id": 10,
+      "religion_id": 5
     },
     {
       "id": 121,
       "tag": "sus_rel15",
-      "name": "G\u00fcney Sudan",
+      "name": "Güney Sudan",
       "color": [
         0,
         48,
@@ -5838,7 +6165,10 @@
         3446,
         3447,
         3448
-      ]
+      ],
+      "leader": "Salva Kiir Mayardit",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 122,
@@ -5876,7 +6206,10 @@
         3615,
         3616,
         3617
-      ]
+      ],
+      "leader": "William Ruto",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 123,
@@ -5931,7 +6264,10 @@
         3904,
         3905,
         3906
-      ]
+      ],
+      "leader": "Samia Suluhu Hassan",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 124,
@@ -5949,7 +6285,10 @@
       "provinces": [
         3631,
         3632
-      ]
+      ],
+      "leader": "Paul Kagame",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 125,
@@ -5969,7 +6308,10 @@
         3767,
         3768,
         3769
-      ]
+      ],
+      "leader": "Évariste Ndayishimiye",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 126,
@@ -5996,7 +6338,10 @@
         3618,
         3619,
         3630
-      ]
+      ],
+      "leader": "Yoweri Museveni",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 127,
@@ -6045,7 +6390,10 @@
         3980,
         3981,
         3982
-      ]
+      ],
+      "leader": "Filipe Nyusi",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 128,
@@ -6069,12 +6417,15 @@
         3888,
         3897,
         3898
-      ]
+      ],
+      "leader": "Lazarus Chakwera",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 129,
       "tag": "soa",
-      "name": "G\u00fcney Afrika Cumhuriyeti",
+      "name": "Güney Afrika Cumhuriyeti",
       "color": [
         255,
         245,
@@ -6121,7 +6472,10 @@
         3974,
         3975,
         3976
-      ]
+      ],
+      "leader": "Cyril Ramaphosa",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 130,
@@ -6139,7 +6493,10 @@
       "provinces": [
         3957,
         3958
-      ]
+      ],
+      "leader": "III. Letsie",
+      "government_id": 3,
+      "religion_id": 4
     },
     {
       "id": 131,
@@ -6157,7 +6514,10 @@
       "provinces": [
         3969,
         3970
-      ]
+      ],
+      "leader": "III. Mswati",
+      "government_id": 9,
+      "religion_id": 20
     },
     {
       "id": 132,
@@ -6191,7 +6551,10 @@
         3844,
         3911,
         3912
-      ]
+      ],
+      "leader": "Nangolo Mbumba",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 133,
@@ -6217,7 +6580,10 @@
         3942,
         3943,
         3944
-      ]
+      ],
+      "leader": "Duma Boko",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 134,
@@ -6249,7 +6615,10 @@
         3952,
         3953,
         3954
-      ]
+      ],
+      "leader": "Emmerson Mnangagwa",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 135,
@@ -6285,7 +6654,10 @@
         3896,
         3909,
         3910
-      ]
+      ],
+      "leader": "Hakainde Hichilema",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 136,
@@ -6345,7 +6717,10 @@
         3825,
         3833,
         3834
-      ]
+      ],
+      "leader": "João Lourenço",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 137,
@@ -6420,7 +6795,10 @@
         3809,
         3810,
         3811
-      ]
+      ],
+      "leader": "Félix Tshisekedi",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 138,
@@ -6443,7 +6821,10 @@
         3574,
         3575,
         3576
-      ]
+      ],
+      "leader": "Denis Sassou Nguesso",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 139,
@@ -6469,7 +6850,10 @@
         3571,
         3572,
         3577
-      ]
+      ],
+      "leader": "Brice Oligui Nguema",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 140,
@@ -6495,7 +6879,10 @@
         3428,
         3429,
         3430
-      ]
+      ],
+      "leader": "Faustin-Archange Touadéra",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 141,
@@ -6513,7 +6900,10 @@
       "provinces": [
         3435,
         3436
-      ]
+      ],
+      "leader": "Teodoro Obiang Nguema Mbasogo",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 142,
@@ -6545,12 +6935,15 @@
         3426,
         3431,
         3432
-      ]
+      ],
+      "leader": "Paul Biya",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 143,
       "tag": "cha",
-      "name": "\u00c7ad",
+      "name": "Çad",
       "color": [
         185,
         192,
@@ -6582,7 +6975,10 @@
         3148,
         3149,
         3150
-      ]
+      ],
+      "leader": "Mahamat Déby",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 144,
@@ -6645,7 +7041,10 @@
         3254,
         3255,
         3256
-      ]
+      ],
+      "leader": "Bola Ahmed Tinubu",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 145,
@@ -6670,7 +7069,10 @@
         3067,
         3068,
         3250
-      ]
+      ],
+      "leader": "Patrice Talon",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 146,
@@ -6690,7 +7092,10 @@
         3059,
         3060,
         3249
-      ]
+      ],
+      "leader": "Faure Gnassingbé",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 147,
@@ -6718,12 +7123,15 @@
         3246,
         3247,
         3248
-      ]
+      ],
+      "leader": "Nana Akufo-Addo",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 148,
       "tag": "ivo",
-      "name": "Fildi\u015fi Sahili",
+      "name": "Fildişi Sahili",
       "color": [
         247,
         127,
@@ -6745,7 +7153,10 @@
         3242,
         3243,
         3244
-      ]
+      ],
+      "leader": "Alassane Ouattara",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 149,
@@ -6765,7 +7176,10 @@
         3239,
         3240,
         3241
-      ]
+      ],
+      "leader": "Joseph Boakai",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 150,
@@ -6784,7 +7198,10 @@
         3236,
         3237,
         3238
-      ]
+      ],
+      "leader": "Julius Maada Bio",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 151,
@@ -6811,7 +7228,10 @@
         3232,
         3234,
         3235
-      ]
+      ],
+      "leader": "Mamady Doumbouya",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 152,
@@ -6830,7 +7250,10 @@
         3000,
         3231,
         3233
-      ]
+      ],
+      "leader": "Umaro Sissoco Embaló",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 153,
@@ -6859,7 +7282,10 @@
         3228,
         3229,
         3230
-      ]
+      ],
+      "leader": "Bassirou Diomaye Faye",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 154,
@@ -6876,7 +7302,10 @@
       "economy": 815,
       "provinces": [
         3227
-      ]
+      ],
+      "leader": "Adama Barrow",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 155,
@@ -6911,7 +7340,10 @@
         2883,
         3222,
         3223
-      ]
+      ],
+      "leader": "Muhammed Veled Gazvani",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 156,
@@ -6931,7 +7363,10 @@
         2864,
         2865,
         2866
-      ]
+      ],
+      "leader": "Brahim Ghali",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 157,
@@ -6989,7 +7424,10 @@
         2923,
         2924,
         2925
-      ]
+      ],
+      "leader": "Assimi Goïta",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 158,
@@ -7021,7 +7459,10 @@
         3023,
         3024,
         3025
-      ]
+      ],
+      "leader": "Ibrahim Traoré",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 159,
@@ -7070,12 +7511,15 @@
         3092,
         3093,
         3094
-      ]
+      ],
+      "leader": "Abdourahamane Tchiani",
+      "government_id": 10,
+      "religion_id": 24
     },
     {
       "id": 161,
       "tag": "ges_rel2",
-      "name": "G\u00fcney Georgia ve G\u00fcney Sandwich Adalar\u0131",
+      "name": "Güney Georgia ve Güney Sandwich Adaları",
       "color": [
         192,
         92,
@@ -7087,12 +7531,15 @@
       "economy": 1323,
       "provinces": [
         5706
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 162,
       "tag": "fal",
-      "name": "Falkland Adalar\u0131",
+      "name": "Falkland Adaları",
       "color": [
         10,
         127,
@@ -7104,7 +7551,10 @@
       "economy": 1323,
       "provinces": [
         5705
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 163,
@@ -7198,12 +7648,15 @@
         4386,
         4387,
         4388
-      ]
+      ],
+      "leader": "Javier Milei",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 164,
       "tag": "chl",
-      "name": "\u015eili",
+      "name": "Şili",
       "color": [
         0,
         53,
@@ -7238,7 +7691,10 @@
         4406,
         4407,
         6147
-      ]
+      ],
+      "leader": "Gabriel Boric",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 165,
@@ -7264,7 +7720,10 @@
         4174,
         4175,
         4176
-      ]
+      ],
+      "leader": "Luis Lacalle Pou",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 166,
@@ -7276,7 +7735,7 @@
         157
       ],
       "capital_province_id": 4279,
-      "capital_name": "Corumb\u00e1",
+      "capital_name": "Corumbá",
       "population": 14395959,
       "economy": 34582,
       "provinces": [
@@ -7292,7 +7751,10 @@
         4280,
         4281,
         4282
-      ]
+      ],
+      "leader": "Santiago Peña",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 167,
@@ -7342,7 +7804,10 @@
         4420,
         4421,
         4422
-      ]
+      ],
+      "leader": "Luis Arce",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 168,
@@ -7412,7 +7877,10 @@
         4473,
         4476,
         4477
-      ]
+      ],
+      "leader": "Dina Boluarte",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 169,
@@ -7439,7 +7907,10 @@
         4486,
         4487,
         6146
-      ]
+      ],
+      "leader": "Daniel Noboa",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 170,
@@ -7509,7 +7980,10 @@
         4563,
         4564,
         4565
-      ]
+      ],
+      "leader": "Gustavo Petro",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 171,
@@ -7575,7 +8049,10 @@
         4545,
         4546,
         4547
-      ]
+      ],
+      "leader": "Nicolás Maduro",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 172,
@@ -7597,7 +8074,10 @@
         4196,
         4197,
         4198
-      ]
+      ],
+      "leader": "Irfaan Ali",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 173,
@@ -7617,7 +8097,10 @@
         4188,
         4189,
         4190
-      ]
+      ],
+      "leader": "Chan Santokhi",
+      "government_id": 10,
+      "religion_id": 9
     },
     {
       "id": 174,
@@ -7797,7 +8280,10 @@
         4298,
         4319,
         4320
-      ]
+      ],
+      "leader": "Luiz Inácio Lula da Silva",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 175,
@@ -7814,7 +8300,10 @@
       "economy": 14874,
       "provinces": [
         5370
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 4
     },
     {
       "id": 176,
@@ -7831,7 +8320,10 @@
       "economy": 9668,
       "provinces": [
         5371
-      ]
+      ],
+      "leader": "Sandra Mason",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 177,
@@ -7848,7 +8340,10 @@
       "economy": 8181,
       "provinces": [
         5369
-      ]
+      ],
+      "leader": "Emmanuel Macron",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 178,
@@ -7865,7 +8360,10 @@
       "economy": 8181,
       "provinces": [
         5368
-      ]
+      ],
+      "leader": "Sylvanie Burton",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 179,
@@ -7882,7 +8380,10 @@
       "economy": 20823,
       "provinces": [
         5367
-      ]
+      ],
+      "leader": "Emmanuel Macron",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 180,
@@ -7899,7 +8400,10 @@
       "economy": 9668,
       "provinces": [
         5366
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 181,
@@ -7916,7 +8420,10 @@
       "economy": 11899,
       "provinces": [
         5365
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 182,
@@ -7934,7 +8441,10 @@
       "provinces": [
         5363,
         5364
-      ]
+      ],
+      "leader": "Donal Trump",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 183,
@@ -7952,7 +8462,10 @@
       "provinces": [
         5361,
         5362
-      ]
+      ],
+      "leader": "Joe Biden",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 184,
@@ -7978,7 +8491,10 @@
         5347,
         5348,
         5349
-      ]
+      ],
+      "leader": "Luis Abinader",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 185,
@@ -8001,12 +8517,15 @@
         5350,
         5351,
         5352
-      ]
+      ],
+      "leader": "Leslie Voltaire",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 186,
       "tag": "cub_rel3_c",
-      "name": "K\u00fcba",
+      "name": "Küba",
       "color": [
         215,
         164,
@@ -8036,8 +8555,13 @@
         5328,
         5329,
         5330,
-        5331
-      ]
+        5331,
+        5334,
+        5335
+      ],
+      "leader": "Miguel Díaz-Canel",
+      "government_id": 2,
+      "religion_id": 4
     },
     {
       "id": 187,
@@ -8055,7 +8579,10 @@
       "provinces": [
         5332,
         5333
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 188,
@@ -8078,7 +8605,10 @@
         5357,
         5359,
         5360
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 189,
@@ -8101,7 +8631,10 @@
         4570,
         4571,
         4572
-      ]
+      ],
+      "leader": "José Raúl Mulino",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 190,
@@ -8124,7 +8657,10 @@
         4577,
         4578,
         4579
-      ]
+      ],
+      "leader": "Rodrigo Chaves Robles",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 191,
@@ -8150,7 +8686,10 @@
         4587,
         4588,
         4589
-      ]
+      ],
+      "leader": "Daniel Ortega",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 192,
@@ -8176,7 +8715,10 @@
         4597,
         4599,
         4600
-      ]
+      ],
+      "leader": "Xiomara Castro",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 193,
@@ -8194,7 +8736,10 @@
       "provinces": [
         4598,
         4601
-      ]
+      ],
+      "leader": "Nayib Bukele",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 194,
@@ -8220,9 +8765,11 @@
         4609,
         4610,
         4611,
-        4626,
-        4627
-      ]
+        4626
+      ],
+      "leader": "Bernardo Arévalo",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 195,
@@ -8241,9 +8788,11 @@
         4622,
         4623,
         4624,
-        4625,
-        4649
-      ]
+        4625
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 196,
@@ -8453,12 +9002,15 @@
         4824,
         4825,
         4826
-      ]
+      ],
+      "leader": "Claudia Sheinbaum",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 197,
       "tag": "usa",
-      "name": "Amerika Birle\u015fik Devletleri",
+      "name": "Amerika Birleşik Devletleri",
       "color": [
         48,
         43,
@@ -8469,6 +9021,9 @@
       "population": 349660000,
       "economy": 844,
       "provinces": [
+        4627,
+        4649,
+        4793,
         4802,
         4803,
         4804,
@@ -8911,6 +9466,7 @@
         5269,
         5270,
         5271,
+        5272,
         5274,
         5275,
         5276,
@@ -8949,8 +9505,7 @@
         5376,
         5377,
         5378,
-        5412,
-        5413,
+        5379,
         5483,
         5484,
         6094,
@@ -8965,7 +9520,10 @@
         6165,
         6166,
         6167
-      ]
+      ],
+      "leader": "Joe Biden",
+      "government_id": 5,
+      "religion_id": 20
     },
     {
       "id": 198,
@@ -8995,7 +9553,6 @@
         4870,
         5208,
         5209,
-        5272,
         5273,
         5300,
         5301,
@@ -9176,13 +9733,20 @@
         5555,
         5556,
         5557,
-        5558
-      ]
+        5558,
+        5372,
+        5405,
+        5412,
+        5413
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 199,
       "tag": "eat",
-      "name": "Do\u011fu Timor",
+      "name": "Doğu Timor",
       "color": [
         203,
         76,
@@ -9193,9 +9757,11 @@
       "population": 1384292,
       "economy": 1620,
       "provinces": [
-        6046,
-        6047
-      ]
+        6046
+      ],
+      "leader": "José Ramos-Horta",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 200,
@@ -9214,7 +9780,10 @@
         6076,
         6077,
         6078
-      ]
+      ],
+      "leader": "Emmanuel Macron",
+      "government_id": 10,
+      "religion_id": 4
     },
     {
       "id": 201,
@@ -9226,7 +9795,7 @@
         12
       ],
       "capital_province_id": 6087,
-      "capital_name": "Ouv\u00e9a",
+      "capital_name": "Ouvéa",
       "population": 289879,
       "economy": 9222,
       "provinces": [
@@ -9234,8 +9803,12 @@
         6084,
         6085,
         6086,
-        6087
-      ]
+        6087,
+        6088
+      ],
+      "leader": "Nikenike Vurobaravu",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 202,
@@ -9252,7 +9825,10 @@
       "economy": 3161,
       "provinces": [
         6156
-      ]
+      ],
+      "leader": "VI. Tupou",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 203,
@@ -9269,7 +9845,10 @@
       "economy": 5020,
       "provinces": [
         6154
-      ]
+      ],
+      "leader": "Tuimaleali'ifano Va'aleto'a Sualauvi II",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 204,
@@ -9286,7 +9865,10 @@
       "economy": 1487,
       "provinces": [
         6153
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 205,
@@ -9304,7 +9886,10 @@
       "provinces": [
         6089,
         6090
-      ]
+      ],
+      "leader": "III. Charles",
+      "government_id": 3,
+      "religion_id": 20
     },
     {
       "id": 206,
@@ -9320,8 +9905,12 @@
       "population": 800014,
       "economy": 1487,
       "provinces": [
-        6114
-      ]
+        6114,
+        6138
+      ],
+      "leader": "David Adeang",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 207,
@@ -9344,8 +9933,13 @@
         6149,
         6150,
         6151,
-        6152
-      ]
+        6152,
+        6117,
+        6141
+      ],
+      "leader": "Taneti Maamau",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 209,
@@ -9372,13 +9966,17 @@
         6126,
         6127,
         6130,
-        6131
-      ]
+        6131,
+        6129
+      ],
+      "leader": "Wesley Simina",
+      "government_id": 10,
+      "religion_id": 20
     },
     {
       "id": 210,
       "tag": "mis",
-      "name": "Marshall Adalar\u0131",
+      "name": "Marshall Adaları",
       "color": [
         217,
         110,
@@ -9399,8 +9997,12 @@
         6140,
         6142,
         6143,
-        6144
-      ]
+        6144,
+        6145
+      ],
+      "leader": "Hilda Heine",
+      "government_id": 10,
+      "religion_id": 20
     }
   ]
 }

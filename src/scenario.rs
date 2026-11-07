@@ -14,6 +14,12 @@ pub struct CivilizationData {
     pub population: u64,
     pub economy: u32,
     pub provinces: Vec<u32>,
+    #[serde(default)]
+    pub leader: Option<String>,
+    #[serde(default)]
+    pub government_id: Option<u32>,
+    #[serde(default)]
+    pub religion_id: Option<u32>,
 }
 
 #[derive(Deserialize, Clone, Debug)]

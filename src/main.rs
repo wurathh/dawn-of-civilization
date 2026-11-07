@@ -10,25 +10,30 @@ use bevy::window::PresentMode;
 use fps::FpsPlugin;
 use map::MapPlugin;
 use menu::MenuPlugin;
-use state::{AppState, GameSession, GameSettings, UiFonts};
+use state::{AppState, GameSession, GameSettings, PreviousMenuState, UiFonts};
 use ui::UiPlugin;
 
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins.set(WindowPlugin {
-            primary_window: Some(Window {
-                title: "Dawn of Civilization".to_string(),
-                resolution: (1440, 850).into(),
-                present_mode: PresentMode::AutoNoVsync,
-                ..default()
-            }),
-            ..default()
-        }))
+        .add_plugins(
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: "Dawn of Civilization".to_string(),
+                        resolution: (1440, 850).into(),
+                        present_mode: PresentMode::AutoNoVsync,
+                        ..default()
+                    }),
+                    ..default()
+                })
+                .set(ImagePlugin::default_linear()),
+        )
         .insert_resource(ClearColor(Color::srgb(0.05, 0.11, 0.17)))
         .init_resource::<UiFonts>()
         .init_resource::<GameSession>()
         .init_resource::<GameSettings>()
         .init_state::<AppState>()
+        .init_resource::<PreviousMenuState>()
         .add_plugins((FpsPlugin, MapPlugin, MenuPlugin, UiPlugin))
         .run();
 }

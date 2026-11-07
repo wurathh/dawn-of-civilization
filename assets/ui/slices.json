@@ -1,0 +1,262 @@
+{
+  "scale": 2,
+  "nine_slice_border_px_2x": {
+    "panel.png": 44,
+    "panel_plain.png": 28,
+    "panel_alert.png": 44,
+    "panel_success.png": 44,
+    "tooltip.png": 20,
+    "inset.png": 16,
+    "header_bar.png": 28,
+    "header_bar_slate.png": 28,
+    "header_bar_alert.png": 28,
+    "header_bar_success.png": 28,
+    "topbar.png": 28,
+    "button_secondary_normal.png": 24,
+    "button_big_secondary_normal.png": 40,
+    "button_secondary_hover.png": 24,
+    "button_big_secondary_hover.png": 40,
+    "button_secondary_pressed.png": 24,
+    "button_big_secondary_pressed.png": 40,
+    "button_secondary_disabled.png": 24,
+    "button_big_secondary_disabled.png": 40,
+    "button_primary_normal.png": 24,
+    "button_big_primary_normal.png": 40,
+    "button_primary_hover.png": 24,
+    "button_big_primary_hover.png": 40,
+    "button_primary_pressed.png": 24,
+    "button_big_primary_pressed.png": 40,
+    "button_primary_disabled.png": 24,
+    "button_big_primary_disabled.png": 40,
+    "button_danger_normal.png": 24,
+    "button_big_danger_normal.png": 40,
+    "button_danger_hover.png": 24,
+    "button_big_danger_hover.png": 40,
+    "button_danger_pressed.png": 24,
+    "button_big_danger_pressed.png": 40,
+    "button_danger_disabled.png": 24,
+    "button_big_danger_disabled.png": 40,
+    "button_success_normal.png": 24,
+    "button_big_success_normal.png": 40,
+    "button_success_hover.png": 24,
+    "button_big_success_hover.png": 40,
+    "button_success_pressed.png": 24,
+    "button_big_success_pressed.png": 40,
+    "button_success_disabled.png": 24,
+    "button_big_success_disabled.png": 40,
+    "tab_active.png": 20,
+    "tab_inactive.png": 20,
+    "close_normal.png": 16,
+    "close_hover.png": 16,
+    "slider_track.png": 12,
+    "slider_fill.png": 12,
+    "progress_green.png": 12,
+    "progress_red.png": 12,
+    "progress_blue.png": 12,
+    "scroll_track.png": 12,
+    "scroll_thumb.png": 12,
+    "icon_frame.png": 16,
+    "flag_frame.png": 16,
+    "hud_pill_normal.png": 16,
+    "hud_pill_hover.png": 16,
+    "hud_pill_pressed.png": 16
+  },
+  "nine_slice_border_px_1x": {
+    "panel.png": 22,
+    "panel_plain.png": 14,
+    "panel_alert.png": 22,
+    "panel_success.png": 22,
+    "tooltip.png": 10,
+    "inset.png": 8,
+    "header_bar.png": 14,
+    "header_bar_slate.png": 14,
+    "header_bar_alert.png": 14,
+    "header_bar_success.png": 14,
+    "topbar.png": 14,
+    "button_secondary_normal.png": 12,
+    "button_big_secondary_normal.png": 20,
+    "button_secondary_hover.png": 12,
+    "button_big_secondary_hover.png": 20,
+    "button_secondary_pressed.png": 12,
+    "button_big_secondary_pressed.png": 20,
+    "button_secondary_disabled.png": 12,
+    "button_big_secondary_disabled.png": 20,
+    "button_primary_normal.png": 12,
+    "button_big_primary_normal.png": 20,
+    "button_primary_hover.png": 12,
+    "button_big_primary_hover.png": 20,
+    "button_primary_pressed.png": 12,
+    "button_big_primary_pressed.png": 20,
+    "button_primary_disabled.png": 12,
+    "button_big_primary_disabled.png": 20,
+    "button_danger_normal.png": 12,
+    "button_big_danger_normal.png": 20,
+    "button_danger_hover.png": 12,
+    "button_big_danger_hover.png": 20,
+    "button_danger_pressed.png": 12,
+    "button_big_danger_pressed.png": 20,
+    "button_danger_disabled.png": 12,
+    "button_big_danger_disabled.png": 20,
+    "button_success_normal.png": 12,
+    "button_big_success_normal.png": 20,
+    "button_success_hover.png": 12,
+    "button_big_success_hover.png": 20,
+    "button_success_pressed.png": 12,
+    "button_big_success_pressed.png": 20,
+    "button_success_disabled.png": 12,
+    "button_big_success_disabled.png": 20,
+    "tab_active.png": 10,
+    "tab_inactive.png": 10,
+    "close_normal.png": 8,
+    "close_hover.png": 8,
+    "slider_track.png": 6,
+    "slider_fill.png": 6,
+    "progress_green.png": 6,
+    "progress_red.png": 6,
+    "progress_blue.png": 6,
+    "scroll_track.png": 6,
+    "scroll_thumb.png": 6,
+    "icon_frame.png": 8,
+    "flag_frame.png": 8,
+    "hud_pill_normal.png": 8,
+    "hud_pill_hover.png": 8,
+    "hud_pill_pressed.png": 8
+  },
+  "headed_border_lrtb_2x": {
+    "panel_headed.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "panel_headed_slate.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "panel_headed_plain.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "panel_headed_plain_slate.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "panel_headed_alert.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "panel_headed_success.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "hud_ribbon_bar.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "hud_vertical_bar.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "hud_bottom_bar.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "hud_date_bar.png": [
+      44,
+      44,
+      88,
+      44
+    ],
+    "panel_headed_2x.png": [
+      44,
+      44,
+      168,
+      44
+    ]
+  },
+  "headed_border_lrtb_1x": {
+    "panel_headed.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "panel_headed_slate.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "panel_headed_plain.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "panel_headed_plain_slate.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "panel_headed_alert.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "panel_headed_success.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "hud_ribbon_bar.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "hud_vertical_bar.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "hud_bottom_bar.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "hud_date_bar.png": [
+      22,
+      22,
+      44,
+      22
+    ],
+    "panel_headed_2x.png": [
+      22,
+      22,
+      84,
+      22
+    ]
+  },
+  "headed_header_height_px_1x": 40
+}
